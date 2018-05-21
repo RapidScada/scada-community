@@ -1,5 +1,5 @@
 # scada-community
-Modules and tools for Rapid SCADA developed by the community
+Modules and tools for Rapid SCADA developed by the community.
 
 Other known GitHub repositories related to Rapid SCADA:
 * OPC UA Driver https://github.com/syndrome5/KpOpcUA
