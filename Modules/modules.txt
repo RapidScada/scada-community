@@ -1,0 +1,1 @@
+Create a solution for each new Server module.
