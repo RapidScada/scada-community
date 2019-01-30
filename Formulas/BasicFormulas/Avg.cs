@@ -1,4 +1,4 @@
-﻿using Scada.Data.Configuration;
+﻿using System;
 using System.Collections.Generic;
 
 namespace BasicFormulas
@@ -9,8 +9,10 @@ namespace BasicFormulas
     /// <remarks>
     /// Usage example:
     /// 1. Add the content of the class to the Formulas table.
-    /// 2. Set the Formula field of an input channel to the following: MovAvg(5); MovAvgStat()
+    /// 2.1. Set the Formula field of an input channel to the following: MovAvg(5); AvgStat()
     /// This means that the input channel value is the average of the last 5 values.
+    /// 2.2. To average values over a time span: TimeAvg(10, 5); AvgStat()
+    /// This means that the input channel value is the average over the last 10 seconds and includes max. 5 last values.
     /// 
     /// These formulas are sponsored by Horacio Venturino from Uruguay.
     /// </remarks>
@@ -35,7 +37,7 @@ namespace BasicFormulas
 
             public int PointCount { get; private set; }
             public Queue<double> Values { get; private set; }
-            public double Sum { get; private set; }
+            public double Sum { get; protected set; }
             public int Count
             {
                 get
@@ -62,11 +64,51 @@ namespace BasicFormulas
         }
 
         /// <summary>
+        /// Item that provides averaging of one input channel over a time span.
+        /// </summary>
+        public class TimeAvgItem : MovAvgItem
+        {
+            public TimeAvgItem(int timeSpanSec, int maxPointCount)
+                : base(maxPointCount)
+            {
+                TimeSpan = TimeSpan.FromSeconds(timeSpanSec);
+                TimeStamps = new Queue<DateTime>(maxPointCount);
+            }
+
+            public TimeSpan TimeSpan { get; private set; }
+            public Queue<DateTime> TimeStamps { get; private set; }
+
+            public new void Append(double val)
+            {
+                DateTime utcNowDT = DateTime.UtcNow;
+
+                while (Count > 0)
+                {
+                    DateTime dateTime = TimeStamps.Peek();
+                    if (utcNowDT - dateTime <= TimeSpan)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        TimeStamps.Dequeue();
+                        Sum -= Values.Dequeue();
+                    }
+                }
+
+                TimeStamps.Enqueue(utcNowDT);
+                Values.Enqueue(val);
+                Sum += val;
+            }
+        }
+
+        /// <summary>
         /// Adds a new or gets an existing MovAvgItem.
         /// </summary>
         public MovAvgItem GetOrAddMovAvgItem(int cnlNum, int pointCount)
         {
-            if (MovAvgItems.TryGetValue(cnlNum, out MovAvgItem movAvgItem))
+            MovAvgItem movAvgItem;
+            if (MovAvgItems.TryGetValue(cnlNum, out movAvgItem))
             {
                 return movAvgItem;
             }
@@ -79,39 +121,86 @@ namespace BasicFormulas
         }
 
         /// <summary>
+        /// Adds a new or gets an existing TimeAvgItem.
+        /// </summary>
+        public TimeAvgItem GetOrAddTimeAvgItem(int cnlNum, int timeSpanSec, int maxPointCount)
+        {
+            MovAvgItem movAvgItem;
+            if (MovAvgItems.TryGetValue(cnlNum, out movAvgItem) && movAvgItem is TimeAvgItem)
+            {
+                return (TimeAvgItem)movAvgItem;
+            }
+            else
+            {
+                TimeAvgItem timeAvgItem = new TimeAvgItem(timeSpanSec, maxPointCount);
+                MovAvgItems[cnlNum] = timeAvgItem;
+                return timeAvgItem;
+            }
+        }
+
+        /// <summary>
         /// Calculates moving average of the current input channel.
         /// </summary>
         public double MovAvg(int pointCount)
         {
+            return MovAvg(pointCount, CnlVal);
+        }
+
+        /// <summary>
+        /// Calculates moving average of the current input channel.
+        /// </summary>
+        public double MovAvg(int pointCount, double cnlVal)
+        {
             MovAvgItem movAvgItem = GetOrAddMovAvgItem(CnlNum, pointCount);
-            movAvgItem.Append(CnlVal);
+            movAvgItem.Append(cnlVal);
             return movAvgItem.Avg;
         }
 
         /// <summary>
-        /// Gets status for an averaged channel.
+        /// Calculates average of the current input channel over the time span.
         /// </summary>
-        public int MovAvgStat()
+        public double TimeAvg(int timeSpanSec, int maxPointCount)
         {
-            return MovAvgItems.TryGetValue(CnlNum, out MovAvgItem movAvgItem) && movAvgItem.Count > 0 ? 
-                CnlStat : BaseValues.CnlStatuses.Undefined;
+            return TimeAvg(timeSpanSec, maxPointCount, CnlVal);
+        }
+
+        /// <summary>
+        /// Calculates average of the current input channel over the time span.
+        /// </summary>
+        public double TimeAvg(int timeSpanSec, int maxPointCount, double cnlVal)
+        {
+            TimeAvgItem timeAvgItem = GetOrAddTimeAvgItem(CnlNum, timeSpanSec, maxPointCount);
+            timeAvgItem.Append(cnlVal);
+            return timeAvgItem.Avg;
+        }
+
+        /// <summary>
+        /// Gets the status for an averaged channel.
+        /// </summary>
+        public int AvgStat()
+        {
+            MovAvgItem movAvgItem;
+            return MovAvgItems.TryGetValue(CnlNum, out movAvgItem) && movAvgItem.Count > 0 ? 
+                CnlStat : 0 /*Undefined*/;
         }
 
         /// <summary>
         /// Gets the sum of all points included in the average.
         /// </summary>
-        public double MovAvgSum(int cnlNum)
+        public double AvgSum(int cnlNum)
         {
-            return MovAvgItems.TryGetValue(CnlNum, out MovAvgItem movAvgItem) ?
+            MovAvgItem movAvgItem;
+            return MovAvgItems.TryGetValue(CnlNum, out movAvgItem) ?
                 movAvgItem.Sum : 0;
         }
 
         /// <summary>
         /// Gets the number of all points included in the average.
         /// </summary>
-        public int MovAvgCount(int cnlNum)
+        public int AvgCount(int cnlNum)
         {
-            return MovAvgItems.TryGetValue(CnlNum, out MovAvgItem movAvgItem) ?
+            MovAvgItem movAvgItem;
+            return MovAvgItems.TryGetValue(CnlNum, out movAvgItem) ?
                 movAvgItem.Count : 0;
         }
     }
