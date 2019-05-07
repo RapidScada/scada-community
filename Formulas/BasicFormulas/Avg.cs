@@ -179,8 +179,7 @@ namespace BasicFormulas
         /// </summary>
         public int AvgStat()
         {
-            MovAvgItem movAvgItem;
-            return MovAvgItems.TryGetValue(CnlNum, out movAvgItem) && movAvgItem.Count > 0 ? 
+            return MovAvgItems.TryGetValue(CnlNum, out MovAvgItem movAvgItem) && movAvgItem.Count > 0 ? 
                 CnlStat : 0 /*Undefined*/;
         }
 
@@ -189,8 +188,7 @@ namespace BasicFormulas
         /// </summary>
         public double AvgSum(int cnlNum)
         {
-            MovAvgItem movAvgItem;
-            return MovAvgItems.TryGetValue(CnlNum, out movAvgItem) ?
+            return MovAvgItems.TryGetValue(CnlNum, out MovAvgItem movAvgItem) ?
                 movAvgItem.Sum : 0;
         }
 
@@ -199,8 +197,7 @@ namespace BasicFormulas
         /// </summary>
         public int AvgCount(int cnlNum)
         {
-            MovAvgItem movAvgItem;
-            return MovAvgItems.TryGetValue(CnlNum, out movAvgItem) ?
+            return MovAvgItems.TryGetValue(CnlNum, out MovAvgItem movAvgItem) ?
                 movAvgItem.Count : 0;
         }
     }
