@@ -75,7 +75,7 @@
     <Content Include="Config\job.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\KpMqtt_Config1.xml">
+    <Content Include="Config\KpMqtt_Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
