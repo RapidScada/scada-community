@@ -20,5 +20,16 @@
                     "Device library for protocol MQTT.";
             }
         }
+
+        /// <summary>
+        /// Gets the default device request parameters.
+        /// </summary>
+        public override KPReqParams DefaultReqParams
+        {
+            get
+            {
+                return new KPReqParams(10000, 200) { CmdLine = "KpMQTT_Config.xml" };
+            }
+        }
     }
 }

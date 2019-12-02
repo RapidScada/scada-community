@@ -10,16 +10,61 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Xml;
 
 namespace Scada.Comm.Devices
 {
     public class KpMqttLogic : KPLogic
     {
-        static readonly TimeSpan MaxPollTime = TimeSpan.FromSeconds(0.1);
+        private class MQTTSubCmd : Command
+        {
+            public string TopicName { get; set; }
+            public int IDUser { get; set; }
+            public string CmdType { get; set; }
+            public int NumCnlCtrl { get; set; }
+        }
+
+        private class MQTTSubJS
+        {
+            public string TopicName { get; set; }
+            public string JSHandlerPath { get; set; }
+            public string JSHandler { get; private set; }
+            public int CnlCnt { get; set; }
+
+            public bool LoadJSHandler()
+            {
+                bool IsJSLoad = false;
+                if (JSHandlerPath != "")
+                {
+                    try
+                    {
+
+                        StreamReader sr = new StreamReader(JSHandlerPath);
+                        JSHandler = sr.ReadToEnd();
+                        IsJSLoad = true;
+                    }
+                    catch
+                    {
+                        IsJSLoad = false;
+                    }
+                }
+                return IsJSLoad;
+            }
+        }
+
+        private class JSVal
+        {
+            public int CnlNum { get; set; }
+            public int Stat { get; set; }
+            public double Val { get; set; }
+        }
+
+
+        private const int PollTimeout = 1000; // timeout to check status, microseconds
+        private static readonly NumberFormatInfo Nfi = new NumberFormatInfo();
 
         // all in ms
-        private int Keepalive;
         private int LastRead;
         private int LastWrite;
         private XmlNode MQTTSettings;
@@ -27,55 +72,13 @@ namespace Scada.Comm.Devices
         private IMqttTransport Transport;
         private IMqttPersistence Persistence;
 
-        private bool IsSessionPresent { get; set; }
-
-        private bool IsPublishing { get; set; }
-
-        private bool InterruptLoop { get; set; }
-
         private MqttConnectionArgs connArgs;
-
         private List<MQTTPubTopic> MQTTPTs;
-
         private List<MQTTPubCmd> MQTTCmds;
-
         private RapSrvEx RSrv;
-
         private SubscribePacket sp;
-
         private List<MQTTSubCmd> SubCmds;
-
         private List<MQTTSubJS> SubJSs;
-
-        bool ReadWaitExpired
-        {
-            get
-            {
-                if (Keepalive > 0)
-                {
-                    return Environment.TickCount - LastRead > (Keepalive * 1.5);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        bool WriteWaitExpired
-        {
-            get
-            {
-                if (Keepalive > 0)
-                {
-                    return Environment.TickCount - LastWrite > Keepalive;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
 
 
         public KpMqttLogic(int number) : base(number)
@@ -83,7 +86,6 @@ namespace Scada.Comm.Devices
             ConnRequired = false;
             CanSendCmd = true;
             WorkState = WorkStates.Normal;
-            Keepalive = 60;
         }
 
 
@@ -119,7 +121,6 @@ namespace Scada.Comm.Devices
 
         private ushort Publish(PublishPacket packet)
         {
-
             if (packet.QosLevel != MqttQos.AtMostOnce)
             {
                 if (packet.PacketId == 0)
@@ -135,31 +136,13 @@ namespace Scada.Comm.Devices
                 });
             }
 
-            try
-            {
-                IsPublishing = true;
-                Send(packet);
-                return packet.PacketId;
-            }
-            catch
-            {
-                IsPublishing = false;
-                throw;
-            }
+            Send(packet);
+            return packet.PacketId;
         }
 
         private void Pubrel(ushort packetId)
         {
-            try
-            {
-                IsPublishing = true;
-                Send(new PubrelPacket() { PacketId = packetId });
-            }
-            catch
-            {
-                IsPublishing = false;
-                throw;
-            }
+            Send(new PubrelPacket() { PacketId = packetId });
         }
 
         private void Subscribe(SubscribePacket packet)
@@ -204,42 +187,53 @@ namespace Scada.Comm.Devices
             return conn;
         }
 
-        private void ReceiveConnack()
+        private bool ReceiveConnack()
         {
             PacketBase packet = Transport.Read();
-            ConnackPacket connack = packet as ConnackPacket;
 
             if (packet == null)
             {
-                WriteToLog(string.Format(Localization.UseRussian ? 
-                    "Первый принимаемый пакет должен быть Connack, но получили {0}" :
-                    "First received message should be Connack, but {0} received instead", packet.GetType().Name));
-                throw new MqttProtocolException(
-                    string.Format("First received message should be Connack, but {0} received instead", packet.GetType().Name));
+                WriteToLog(Localization.UseRussian ?
+                    "Ошибка: первый пакет не получен" :
+                    "Error: first packet is not received");
             }
-
-            if (connack.ReturnCode != ConnackReturnCode.Accepted)
+            else if (!(packet is ConnackPacket connack))
             {
-                WriteToLog(Localization.UseRussian ? 
-                    "Соединение не разрешено брокером" : 
-                    "The connection was not accepted");
-                throw new MqttConnectException("The connection was not accepted", connack.ReturnCode);
+                WriteToLog(string.Format(Localization.UseRussian ? 
+                    "Ошибка: первый принимаемый пакет должен быть Connack, но получили {0}" :
+                    "Error: first packet must be Connack, but {0} received", 
+                    packet.GetType().Name));
+            }
+            else if (connack.ReturnCode != ConnackReturnCode.Accepted)
+            {
+                WriteToLog(string.Format(Localization.UseRussian ? 
+                    "Соединение не разрешено брокером. Код: {0}" : 
+                    "The connection was not accepted by a broker. Return code: {0}", 
+                    connack.ReturnCode));
+            }
+            else
+            {
+                return true;
             }
 
-            IsSessionPresent = connack.SessionPresent;
+            return false;
         }
 
         private void Send(PacketBase packet)
         {
             if (Transport.IsClosed)
             {
-                WriteToLog(Localization.UseRussian ? 
-                    "Попытка отправить пакет в закрытом состоянии Transport" : 
-                    "Tried to send packet while closed");
-                throw new MqttClientException("Tried to send packet while closed");
+                lastCommSucc = false;
+                WriteToLog(Localization.UseRussian ?
+                    "Ошибка: попытка отправить пакет в закрытом состоянии транспорта" :
+                    "Error: attempt to send packet while the transport is closed");
             }
-            Transport.Write(packet);
-            LastWrite = Environment.TickCount;
+            else
+            {
+                WriteToLog("Send packet");
+                Transport.Write(packet);
+                LastWrite = Environment.TickCount;
+            }
         }
 
         private ushort GetNextPacketId()
@@ -260,12 +254,14 @@ namespace Scada.Comm.Devices
 
         private void ReceivePacket()
         {
+            WriteToLog("Receive packet");
             PacketBase packet = Transport.Read();
             LastRead = Environment.TickCount;
             HandleReceivedPacket(packet);
+            FinishRequest();
         }
 
-        void HandleReceivedPacket(PacketBase packet)
+        private void HandleReceivedPacket(PacketBase packet)
         {
             switch (packet.PacketType)
             {
@@ -293,18 +289,18 @@ namespace Scada.Comm.Devices
                 case PingrespPacket.PacketTypeCode:
                     break;
                 default:
-                    WriteToLog(string.Format(Localization.UseRussian ? 
-                        "Не возможно принять пакет типа {0}" : 
-                        "Cannot receive message of type {0}", packet.GetType().Name));
-                    throw new MqttProtocolException(
-                        string.Format("Cannot receive message of type {0}", packet.GetType().Name));
+                    lastCommSucc = false;
+                    WriteToLog(string.Format(Localization.UseRussian ?
+                        "Ошибка: невозможно принять пакет типа {0}" :
+                        "Error: can not receive message of type {0}", packet.GetType().Name));
+                    break;
             }
         }
 
 
         // -- incoming publish events --
 
-        void OnPublishReceived(PublishPacket packet)
+        private void OnPublishReceived(PublishPacket packet)
         {
             //WriteToLog (Encoding.UTF8.GetString(packet.Message));
             //WriteToLog (packet.Topic);
@@ -448,7 +444,7 @@ namespace Scada.Comm.Devices
             }
         }
 
-        void OnQos2PublishReceived(PublishPacket packet)
+        private void OnQos2PublishReceived(PublishPacket packet)
         {
             if (!Persistence.IsIncomingFlowRegistered(packet.PacketId))
             {
@@ -465,7 +461,7 @@ namespace Scada.Comm.Devices
             Send(new PubrecPacket() { PacketId = packet.PacketId });
         }
 
-        void OnPubrelReceived(PubrelPacket packet)
+        private void OnPubrelReceived(PubrelPacket packet)
         {
             Persistence.ReleaseIncomingFlow(packet.PacketId);
             Send(new PubcompPacket() { PacketId = packet.PacketId });
@@ -473,97 +469,39 @@ namespace Scada.Comm.Devices
 
         // -- outgoing publish events --
 
-        void OnPubackReceived(PubackPacket packet)
+        private void OnPubackReceived(PubackPacket packet)
         {
             Persistence.SetOutgoingFlowCompleted(packet.PacketId);
-            IsPublishing = false;
         }
 
-        void OnPubrecReceived(PubrecPacket packet)
+        private void OnPubrecReceived(PubrecPacket packet)
         {
             Persistence.SetOutgoingFlowReceived(packet.PacketId);
             Send(new PubrelPacket() { PacketId = packet.PacketId });
         }
 
-        void OnPubcompReceived(PubcompPacket packet)
+        private void OnPubcompReceived(PubcompPacket packet)
         {
             Persistence.SetOutgoingFlowCompleted(packet.PacketId);
-            IsPublishing = false;
         }
 
         // -- subscription events --
 
-        void OnSubackReceived(SubackPacket packet)
+        private void OnSubackReceived(SubackPacket packet)
         {
 
         }
 
-        void OnUnsubackReceived(UnsubackPacket packet)
+        private void OnUnsubackReceived(UnsubackPacket packet)
         {
 
         }
 
-        private bool Poll(int pollTime)
-        {
-            return Transport.Poll(Math.Min(pollTime, (int)MaxPollTime.TotalMilliseconds));
-        }
-
-        public override void Session()
-        {
-            base.Session();
-
-            if (!RestoryConnect())
-            {
-                WorkState = WorkStates.Error;
-                WriteToLog(Localization.UseRussian ? "Ошибка при повторном подключении" : "Error reconnecting");
-            }
-            else
-            {
-                WorkState = WorkStates.Normal;
-
-                int readThreshold = Environment.TickCount + Keepalive;
-                int pollTime = readThreshold - Environment.TickCount;
-                if (pollTime > 0)
-                {
-                    if (Poll(pollTime))
-                    {
-                        ReceivePacket();
-                    }
-                    else if (WriteWaitExpired)
-                    {
-                        Send(new PingreqPacket());
-                    }
-                    else if (ReadWaitExpired)
-                    {
-                        WriteToLog("MQTT timeout exception");
-                    }
-                }
-
-                MQTTPTs = RSrv.GetValues(MQTTPTs);
-                NumberFormatInfo nfi = new NumberFormatInfo();
-
-                foreach (MQTTPubTopic mqtttp in MQTTPTs)
-                {
-                    if (!mqtttp.IsPub)
-                        continue;
-                    nfi.NumberDecimalSeparator = mqtttp.NumberDecimalSeparator;
-                    Publish(new PublishPacket()
-                    {
-                        Topic = mqtttp.TopicName,
-                        QosLevel = mqtttp.QosLevels,
-                        Retain = mqtttp.Retain,
-                        Message = Encoding.UTF8.GetBytes(mqtttp.Value.ToString(nfi))
-                    });
-                    mqtttp.IsPub = false;
-                }
-            }
-            //Thread.Sleep (ReqParams.Delay);
-        }
 
         /// <summary>
         /// Connection Check
         /// </summary>      
-        public bool RestoryConnect()
+        private bool RestoreConnect()
         {
             bool chConnect = false;
             try
@@ -584,7 +522,7 @@ namespace Scada.Comm.Devices
         /// <summary>
         /// Communication line initialized
         /// </summary>
-        public void Connect(XmlNode MQTTSettings)
+        private void Connect(XmlNode MQTTSettings)
         {
             connArgs = new MqttConnectionArgs
             {
@@ -593,26 +531,74 @@ namespace Scada.Comm.Devices
                 Port = Convert.ToInt32(MQTTSettings.Attributes.GetNamedItem("Port").Value),
                 Username = MQTTSettings.Attributes.GetNamedItem("UserName").Value,
                 Password = MQTTSettings.Attributes.GetNamedItem("Password").Value,
-                Keepalive = TimeSpan.FromSeconds(60),
-                ReadTimeout = TimeSpan.FromSeconds(10),
-                WriteTimeout = TimeSpan.FromSeconds(10)
+                //Keepalive = TimeSpan.FromSeconds(60),
+                ReadTimeout = TimeSpan.FromMilliseconds(ReqParams.Timeout),
+                WriteTimeout = TimeSpan.FromMilliseconds(ReqParams.Timeout)
             };
 
             Persistence = new InMemoryPersistence();
-            Transport = new TcpTransport(connArgs.Hostname, connArgs.Port);
-            Transport.Version = connArgs.Version;
+            Transport = new TcpTransport(connArgs.Hostname, connArgs.Port) { Version = connArgs.Version };
             Transport.SetTimeouts(connArgs.ReadTimeout, connArgs.WriteTimeout);
 
             Send(MakeConnectMessage(connArgs));
-            ReceiveConnack();
-            ResumeOutgoingFlows();
 
-            if (sp.Topics.Length > 0)
-                Subscribe(sp);
+            if (ReceiveConnack())
+            {
+                ResumeOutgoingFlows();
 
-            WriteToLog(Localization.UseRussian ? "Инициализация линии связи выполнена успешно." : "Communication line initialized successfully");
+                if (sp.Topics.Length > 0)
+                    Subscribe(sp);
+
+                WriteToLog(Localization.UseRussian ?
+                    "Соединение установлено" :
+                    "Connection established");
+            }
         }
 
+
+        public override void Session()
+        {
+            base.Session();
+
+            if (!RestoreConnect())
+            {
+                lastCommSucc = false;
+                WorkState = WorkStates.Error;
+                WriteToLog(Localization.UseRussian ? 
+                    "Ошибка при повторном подключении" : 
+                    "Error reconnecting");
+            }
+            else
+            {
+                WorkState = WorkStates.Normal;
+
+                if (Transport.Poll(PollTimeout))
+                    ReceivePacket();
+                else
+                    Send(new PingreqPacket()); // send ping request
+
+                foreach (MQTTPubTopic mqtttp in RSrv.GetValues(MQTTPTs))
+                {
+                    if (!mqtttp.IsPub)
+                        continue;
+
+                    Nfi.NumberDecimalSeparator = mqtttp.NumberDecimalSeparator;
+
+                    Publish(new PublishPacket
+                    {
+                        Topic = mqtttp.TopicName,
+                        QosLevel = mqtttp.QosLevels,
+                        Retain = mqtttp.Retain,
+                        Message = Encoding.UTF8.GetBytes(mqtttp.Value.ToString(Nfi))
+                    });
+
+                    mqtttp.IsPub = false;
+                }
+            }
+
+            Thread.Sleep(ReqParams.Delay);
+            CalcSessStats();
+        }
 
         public override void OnAddedToCommLine()
         {
@@ -745,31 +731,33 @@ namespace Scada.Comm.Devices
 
             foreach (MQTTPubCmd mpc in MQTTCmds)
             {
-                if (mpc.NumCmd != cmd.CmdNum)
-                    continue;
-                if (cmd.CmdTypeID == BaseValues.CmdTypes.Standard)
+                if (mpc.NumCmd == cmd.CmdNum)
                 {
-                    NumberFormatInfo nfi = new NumberFormatInfo();
-                    nfi.NumberDecimalSeparator = ".";
-                    Publish(new PublishPacket()
+                    if (cmd.CmdTypeID == BaseValues.CmdTypes.Standard)
                     {
-                        Topic = mpc.TopicName,
-                        QosLevel = mpc.QosLevels,
-                        Retain = mpc.Retain,
-                        Message = Encoding.UTF8.GetBytes(cmd.CmdVal.ToString(nfi))
-                    });
-                }
-                if (cmd.CmdTypeID == BaseValues.CmdTypes.Binary)
-                {
-                    Publish(new PublishPacket()
+                        Nfi.NumberDecimalSeparator = ".";
+                        Publish(new PublishPacket()
+                        {
+                            Topic = mpc.TopicName,
+                            QosLevel = mpc.QosLevels,
+                            Retain = mpc.Retain,
+                            Message = Encoding.UTF8.GetBytes(cmd.CmdVal.ToString(Nfi))
+                        });
+                    }
+                    else if (cmd.CmdTypeID == BaseValues.CmdTypes.Binary)
                     {
-                        Topic = mpc.TopicName,
-                        QosLevel = mpc.QosLevels,
-                        Retain = mpc.Retain,
-                        Message = cmd.CmdData
-                    });
+                        Publish(new PublishPacket()
+                        {
+                            Topic = mpc.TopicName,
+                            QosLevel = mpc.QosLevels,
+                            Retain = mpc.Retain,
+                            Message = cmd.CmdData
+                        });
+                    }
                 }
             }
+
+            CalcCmdStats();
         }
 
         public override void OnCommLineTerminate()
@@ -780,48 +768,5 @@ namespace Scada.Comm.Devices
             WriteToLog(Localization.UseRussian ? "Отключение от MQTT брокера" : "Disconnect from MQTT broker");
             WorkState = WorkStates.Undefined;
         }
-    }
-
-    public class MQTTSubCmd : Command
-    {
-        public string TopicName { get; set; }
-        public int IDUser { get; set; }
-        public string CmdType { get; set; }
-        public int NumCnlCtrl { get; set; }
-    }
-
-    public class MQTTSubJS
-    {
-        public string TopicName { get; set; }
-        public string JSHandlerPath { get; set; }
-        public string JSHandler { get; private set; }
-        public int CnlCnt { get; set; }
-
-        public bool LoadJSHandler()
-        {
-            bool IsJSLoad = false;
-            if (JSHandlerPath != "")
-            {
-                try
-                {
-
-                    StreamReader sr = new StreamReader(JSHandlerPath);
-                    JSHandler = sr.ReadToEnd();
-                    IsJSLoad = true;
-                }
-                catch
-                {
-                    IsJSLoad = false;
-                }
-            }
-            return IsJSLoad;
-        }
-    }
-
-    public class JSVal
-    {
-        public int CnlNum { get; set; }
-        public int Stat { get; set; }
-        public double Val { get; set; }
     }
 }
