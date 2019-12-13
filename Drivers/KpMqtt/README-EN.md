@@ -156,7 +156,7 @@ The following is an example of a section of a ScadaCommunicator configuration fi
       </LineParams>
       <CustomParams />
       <ReqSequence>
-        <KP active="true" bind="false" number="42" name="Test MQTT" dll="KpMqtt.dll" address="0" callNum="" timeout="0" delay="60" time="00:00:00" period="00:00:00" cmdLine="KpMQTT_Config.xml" />
+        <KP active="true" bind="false" number="42" name="Test MQTT" dll="KpMqtt.dll" address="0" callNum="" timeout="0" delay="60" time="00:00:00" period="00:00:00" cmdLine="KpMqtt_Config.xml" />
       </ReqSequence>
     </CommLine>
 ```
