@@ -171,7 +171,7 @@ Description of sections and attributes regarding the operation of the KpMqtt dri
 
 	-	**Delay** attribute (For GUI: Device polling / Selected device / Delay) - this attribute defines the value of the delay between the polling cycles of the MQTT broker. This value is selected individually depending on the requirements for the data collection mechanism. In this case, a value of 60 is selected.
 
-	-	**cmdLine** attribute (Device polling / Selected device / Command line) - this attribute defines the name of the configuration file for the current device. In this case, the file name is KpMQTT_Config.xml. The file is located in the Config folder of the ScadaCommunicator application.
+	-	**cmdLine** attribute (Device polling / Selected device / Command line) - this attribute defines the name of the configuration file for the current device. In this case, the file name is KpMqtt_Config.xml. The file is located in the Config folder of the ScadaCommunicator application.
 
 There are no restrictions on the number of created devices within the same communication line for this driver. But at the same time, other conditions should be taken into account, which can have a significant impact on the entire mechanism of the communication line as a whole. If we take into account external conditions, then you should pay attention to the configuration parameter of the **MQTT** broker timeout. The total polling cycle of all devices on one communication line should not exceed the broker's timeout. When creating more than one **KpMqtt** device on the same communication line, you must specify different **ClientIDs**.
 
