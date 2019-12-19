@@ -24,8 +24,6 @@ namespace Scada.Comm.Devices
     public class MQTTPubCmd : MQTTPubParam
     {
         public int NumCmd { get; set; }
-
-
     }
 
     public class RapSrvEx : ServerComm
@@ -45,7 +43,6 @@ namespace Scada.Comm.Devices
 
         public List<MQTTPubTopic> GetValues(List<MQTTPubTopic> MqttPTs)
         {
-
             if (cn)
             {
                 SrezTableLight stl = new SrezTableLight();
