@@ -1,0 +1,23 @@
+﻿body {
+    margin: 20px;
+}
+
+div.descr {
+    margin: 5px 0;
+}
+
+div.data {
+    border: 1px solid gray;
+    height: 100px;
+    margin: 5px 0;
+    overflow: scroll;
+    white-space: nowrap;
+}
+
+#divData1 {
+    height: 70px;
+}
+
+#divData2 {
+    height: 500px;
+}
