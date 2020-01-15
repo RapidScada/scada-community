@@ -26,10 +26,10 @@ namespace Scada.Comm.Devices
         public int NumCmd { get; set; }
     }
 
-    public class RapSrvEx : ServerComm
+    public class  RapSrvEx : ServerComm
     {
         public bool cn { get; set; }
-
+  
         public bool IsCurr { get; set; }
 
         private RapSrvEx rsrv;

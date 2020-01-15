@@ -88,10 +88,8 @@ namespace Scada.Comm.Devices
             WorkState = WorkStates.Normal;
         }
 
-
         private void ResumeOutgoingFlows()
         {
-
             foreach (OutgoingFlow flow in Persistence.GetPendingOutgoingFlows())
             {
                 Resume(flow);
@@ -116,6 +114,7 @@ namespace Scada.Comm.Devices
             {
                 Pubrel(flow.PacketId);
             }
+
             Persistence.LastOutgoingPacketId = flow.PacketId;
         }
 
@@ -137,6 +136,7 @@ namespace Scada.Comm.Devices
             }
 
             Send(packet);
+
             return packet.PacketId;
         }
 
@@ -161,14 +161,15 @@ namespace Scada.Comm.Devices
             {
                 packet.PacketId = this.GetNextPacketId();
             }
+
             Send(packet);
         }
 
         private ConnectPacket MakeConnectMessage(MqttConnectionArgs args)
         {
             ConnectPacket conn = new ConnectPacket();
-            conn.ProtocolVersion = args.Version;
 
+            conn.ProtocolVersion = args.Version;
             conn.ClientId = args.ClientId;
             conn.Username = args.Username;
             conn.Password = args.Password;
@@ -184,6 +185,7 @@ namespace Scada.Comm.Devices
 
             conn.CleanSession = args.CleanSession;
             conn.KeepAlivePeriod = (ushort)args.Keepalive.TotalSeconds;
+
             return conn;
         }
 
@@ -254,11 +256,25 @@ namespace Scada.Comm.Devices
 
         private void ReceivePacket()
         {
-            WriteToLog("Receive packet");
-            PacketBase packet = Transport.Read();
-            LastRead = Environment.TickCount;
-            HandleReceivedPacket(packet);
-            FinishRequest();
+            try
+            {
+                WriteToLog("Receive packet");
+                PacketBase packet = Transport.Read();
+                LastRead = Environment.TickCount;
+                HandleReceivedPacket(packet);
+            }
+            catch (MqttProtocolException ex)
+            {
+                WriteToLog(string.Format(Localization.UseRussian ?
+                    "Ошибка: {0}" :
+                    "Error: {0}", ex.ToString()));
+                Disconnect();
+                lastCommSucc = false;
+            }
+            finally
+            {
+                FinishRequest();
+            }
         }
 
         private void HandleReceivedPacket(PacketBase packet)
@@ -296,7 +312,6 @@ namespace Scada.Comm.Devices
                     break;
             }
         }
-
 
         // -- incoming publish events --
 
@@ -347,7 +362,6 @@ namespace Scada.Comm.Devices
                                 srez.CnlNums[i] = jsvl.CnlNum;
                                 srez.SetCnlData(jsvl.CnlNum, cnlData);
                                 i++;
-
                             }
 
                             bool snd = RSrv.SendSrez(srez, out sndres);
@@ -436,7 +450,6 @@ namespace Scada.Comm.Devices
             }
             else
             {
-
                 if (packet.QosLevel == MqttQos.AtLeastOnce)
                 {
                     Send(new PubackPacket() { PacketId = packet.PacketId });
@@ -498,30 +511,21 @@ namespace Scada.Comm.Devices
         }
 
 
-        /// <summary>
-        /// Connection Check
-        /// </summary>      
         private bool RestoreConnect()
         {
-            bool chConnect = false;
             try
             {
                 if (Transport.IsClosed)
                     Connect(MQTTSettings);
 
-                chConnect = true;
+                return true;
             }
             catch
             {
-                chConnect = false;
+                return false;
             }
-
-            return chConnect;
         }
 
-        /// <summary>
-        /// Communication line initialized
-        /// </summary>
         private void Connect(XmlNode MQTTSettings)
         {
             connArgs = new MqttConnectionArgs
@@ -555,6 +559,16 @@ namespace Scada.Comm.Devices
             }
         }
 
+        private void Disconnect()
+        {
+            RSrv.Disconn();
+            Send(new DisconnectPacket());
+            Transport.Close();
+            WriteToLog(Localization.UseRussian ? 
+                "Отключение от MQTT брокера" : 
+                "Disconnect from MQTT broker");
+        }
+        
 
         public override void Session()
         {
@@ -563,15 +577,12 @@ namespace Scada.Comm.Devices
             if (!RestoreConnect())
             {
                 lastCommSucc = false;
-                WorkState = WorkStates.Error;
                 WriteToLog(Localization.UseRussian ? 
                     "Ошибка при повторном подключении" : 
                     "Error reconnecting");
             }
             else
             {
-                WorkState = WorkStates.Normal;
-
                 if (Transport.Poll(PollTimeout))
                     ReceivePacket();
                 else
@@ -593,14 +604,14 @@ namespace Scada.Comm.Devices
                     });
 
                     mqtttp.IsPub = false;
-                }
+                }  
             }
 
             Thread.Sleep(ReqParams.Delay);
             CalcSessStats();
         }
 
-        public override void OnAddedToCommLine()
+        public override void OnAddedToCommLine()  
         {
             List<TagGroup> tagGroups = new List<TagGroup>();
             TagGroup tagGroup = new TagGroup("GroupMQTT");
@@ -719,7 +730,6 @@ namespace Scada.Comm.Devices
                     i++;
 
                 }
-
             }
 
             Connect(MQTTSettings);
@@ -727,7 +737,7 @@ namespace Scada.Comm.Devices
 
         public override void SendCmd(Command cmd)
         {
-            base.SendCmd(cmd);
+            base.SendCmd(cmd); 
 
             foreach (MQTTPubCmd mpc in MQTTCmds)
             {
@@ -762,11 +772,7 @@ namespace Scada.Comm.Devices
 
         public override void OnCommLineTerminate()
         {
-            RSrv.Disconn();
-            Send(new DisconnectPacket());
-            Transport.Close();
-            WriteToLog(Localization.UseRussian ? "Отключение от MQTT брокера" : "Disconnect from MQTT broker");
-            WorkState = WorkStates.Undefined;
+            Disconnect();
         }
     }
 }
