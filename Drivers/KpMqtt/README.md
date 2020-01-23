@@ -176,3 +176,4 @@ Description of sections and attributes regarding the operation of the KpMqtt dri
 There are no restrictions on the number of created devices within the same communication line for this driver. But at the same time, other conditions should be taken into account, which can have a significant impact on the entire mechanism of the communication line as a whole. If we take into account external conditions, then you should pay attention to the configuration parameter of the **MQTT** broker timeout. The total polling cycle of all devices on one communication line should not exceed the broker's timeout. When creating more than one **KpMqtt** device on the same communication line, you must specify different **ClientIDs**.
 
 If during operation you find any problems in the operation of this driver, please inform at https://forum.rapidscada.org/
+video https://www.youtube.com/watch?v=QTcimIik6uU
