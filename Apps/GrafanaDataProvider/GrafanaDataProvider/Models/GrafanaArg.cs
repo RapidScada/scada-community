@@ -1,5 +1,8 @@
 ﻿namespace GrafanaDataProvider.Models
 {
+    /// <summary>
+    /// Parameters passed by Grafana
+    /// </summary>
     public class GrafanaArg
     {
         public string app { get; set; }

@@ -1,8 +1,11 @@
 ﻿namespace GrafanaDataProvider.Models
 {
-    public class Encryptor
+    /// <summary>
+    /// Password to connect to the server
+    /// </summary>
+    public class Password
     {
         public string password { get; set; }
-        public string encryptorString { get; set; }
+        public string encryptedPassword { get; set; }
     }
 }

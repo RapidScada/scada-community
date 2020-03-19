@@ -1,5 +1,8 @@
 ﻿namespace GrafanaDataProvider.Models
 {
+    /// <summary>
+    /// Time period
+    /// </summary>
     public class Range
     {
         public string from { get; set; }

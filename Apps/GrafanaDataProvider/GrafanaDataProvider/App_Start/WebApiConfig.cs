@@ -18,8 +18,9 @@ namespace GrafanaDataProvider
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            var appXmlType = config.Formatters.XmlFormatter.SupportedMediaTypes.FirstOrDefault(t => t.MediaType == "application/xml");
-            config.Formatters.XmlFormatter.SupportedMediaTypes.Remove(appXmlType);
+            var xmlFormatter = config.Formatters.XmlFormatter;
+            var appXmlType = xmlFormatter.SupportedMediaTypes.FirstOrDefault(t => t.MediaType == "application/xml");
+            xmlFormatter.SupportedMediaTypes.Remove(appXmlType);
         }
     }
 }

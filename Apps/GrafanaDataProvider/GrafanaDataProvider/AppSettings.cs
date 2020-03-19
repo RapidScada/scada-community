@@ -1,55 +1,28 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Scada;
+using Scada.Client;
 
 namespace GrafanaDataProvider
 {
-    public class AppSettings
+    /// <summary>
+    /// Represents application settings.
+    /// </summary>
+    public class AppSettings : CommSettings
     {
-        /// <summary>
-        /// Get or set server
-        /// </summary>
-        public string Server { get; set; }
-        /// <summary>
-        /// Get or set port
-        /// </summary>
-        public int Port { get; set; }
-        /// <summary>
-        /// Get or set user
-        /// </summary>
-        public string User { get; set; }
-        /// <summary>
-        /// Get or set password
-        /// </summary>
-        public string Password { get; set; }
-        /// <summary>
-        /// Get or set timeout
-        /// </summary>
-        public int TimeOut { get; set; }
 
         /// <summary>
-        /// Set default settings
+        /// Initializes connection parameters. 
         /// </summary>
-        public void SetToDefault()
-        {
-            Server = "localhost";
-            Port = 3306;
-            User = "";
-            Password = "";
-            TimeOut = 1000;
-        }
-
         public AppSettings()
+            : base()
         {
-            SetToDefault();
+
         }
 
         /// <summary>
-        /// Get parameter from collection.
+        /// Gets the specified parameter from the collection.
         /// </summary>
         private string GetParameter(NameValueCollection settings, string paramName)
         {
@@ -65,21 +38,20 @@ namespace GrafanaDataProvider
         }
 
         /// <summary>
-        /// Download settings from Web.config.
+        /// Loads settings from Web.config.
         /// </summary>
         public bool Load(out string errMsg)
         {
             try
             {
                 SetToDefault();
-                NameValueCollection settings = ConfigurationManager.AppSettings;
-
-                Server = GetParameter(settings, "serverHost");
-                Port = Convert.ToInt32(GetParameter(settings, "serverPort"));
-                User = GetParameter(settings, "serverUser");
-                Password = ScadaUtils.Decrypt(GetParameter(settings, "Password"));
-                TimeOut = Convert.ToInt32(GetParameter(settings, "serverTimeout"));
-
+                NameValueCollection settings = ConfigurationManager.AppSettings;                
+                ServerHost = GetParameter(settings, "serverHost");
+                ServerPort = Convert.ToInt32(GetParameter(settings, "serverPort"));
+                ServerUser = GetParameter(settings, "serverUser");
+                ServerPwd = ScadaUtils.Decrypt(GetParameter(settings, "Password"));
+                ServerTimeout = Convert.ToInt32(GetParameter(settings, "serverTimeout"));
+                                
                 errMsg = "";
                 return true;
             }

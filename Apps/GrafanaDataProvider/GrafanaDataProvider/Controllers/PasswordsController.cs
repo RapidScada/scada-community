@@ -8,13 +8,13 @@ namespace GrafanaDataProvider.Controllers
     {
         [HttpGet]
         [Route("api/passwords/{password}")]
-        public Encryptor GetEncryptor(string password)
+        public Password GetEncryptor(string password)
         {
-            Encryptor encryptor = new Encryptor
+            return new Password
             {
-                encryptorString = ScadaUtils.Encrypt(password)
+                password = password,
+                encryptedPassword = ScadaUtils.Encrypt(password)
             };
-            return encryptor;
         }
     }
 }

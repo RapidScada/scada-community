@@ -1,5 +1,8 @@
 ﻿namespace GrafanaDataProvider.Models
 {
+    /// <summary>
+    /// Target Options
+    /// </summary>
     public class Targets
     {
         public string target { get; set; }

@@ -1,41 +1,16 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-    <title>Password encryption</title>
+    <meta charset="utf-8" />
+    <title>Grafana Data Provider</title>
 </head>
 <body>
-
-    <div>
-        <h2>Please specify a password as command line argument</h2>
-        <ul id="products" />
-    </div>
-    <div>
-        <h2>Given string:</h2>
-        <input type="text" id="pwdId" size="45" />
-        <input type="button" value="Encrypt" onclick="Encrypt();" />
-        <h2>Encrypted string:</h2>
-        <p type="text" id="encryptedID" size="45" />
-    </div>
-
-    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
-    <script>
-        var uri = 'api/trends';
-        var uriPw = 'api/passwords';
-
-    function formatItem(item) {
-        return item.encryptorString;
-    }
-
-        function Encrypt() {
-            var pw = $('#pwdId').val();
-            $.getJSON(uriPw + '/' + pw)
-                .done(function (data) {
-                    $('#encryptedID').text(formatItem(data));
-                })
-                .fail(function (jqXHR, textStatus, err) {
-                    $('#encryptedID').text('Error: ' + err);
-                });
-        }
-    </script>
+    <h3>
+        <a href="password.html">Encrypt Password</a>
+    </h3>
+    
+    <h3>
+        <a href="api/passwords/testPassword" target="_blank">Documentation</a>
+    </h3>   
 </body>
 </html>
