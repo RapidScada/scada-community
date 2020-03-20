@@ -45,7 +45,7 @@ namespace GrafanaDataProvider.Controllers
 
         static TrendsController()
         {
-            LogDir = /*DefWebAppDir +*/ "log" + Path.DirectorySeparatorChar;
+            LogDir = @"C:\SCADA\ScadaWeb\"+ "log" + Path.DirectorySeparatorChar;
             Log = new Log(Log.Formats.Simple) { Encoding = Encoding.UTF8 };
             Log.FileName = LogDir + LogFileName;
 
@@ -202,7 +202,7 @@ namespace GrafanaDataProvider.Controllers
                             if (!int.TryParse(grafanaArg.targets[i].target.Trim(), out int cnlNum))
                             {
                                 Log.WriteError("It is not possible to read the dates for the channel " + cnlNum);
-                                trends[i] = new TrendData { target = "-1", datapoints = null };                                
+                                trends[i] = new TrendData { target = "-1", datapoints = null };                               
                             }
                             else
                             {
@@ -221,20 +221,22 @@ namespace GrafanaDataProvider.Controllers
                                                     ToUnixTimeMilliseconds() + k* 60000 });
                                             else
                                                 points.Add(new double?[] { trend.Points[i1].Val,
-                                                    DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() });
+                                                    DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).
+                                                    ToUnixTimeMilliseconds() });
 
                                         }
                                         else
                                         {
                                             points.Add(new double?[] { trend.Points[i1].Val,
-                                                DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() });
+                                                DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).
+                                                ToUnixTimeMilliseconds() });
                                         }
                                     }
                                 }
                                 trends[i] = new TrendData { target = cnlNum.ToString(), datapoints = points };
+                                Log.WriteAction("Channel data received " + cnlNum);
                             }
                         }
-                        Log.WriteAction("Channel data received ");
                         return trends;
                     }
                     else
