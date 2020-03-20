@@ -211,22 +211,25 @@ namespace GrafanaDataProvider.Controllers
                                 Trend trend = GetTrend(date, cnlNum, isHour);
                                 for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
-                                    DateTimeOffset time = new DateTimeOffset(trend.Points[i1].DateTime);
-                                    long t = time.ToUnixTimeMilliseconds();
-
                                     if (i1 > 0)
                                     {
-                                        DateTimeOffset time1 = new DateTimeOffset(trend.Points[i1 - 1].DateTime);
-                                        long t1 = time.ToUnixTimeMilliseconds();
-
-                                        if ((t-t1) > timeCoef * 60000)
-                                            points.Add(new double?[] { null, t1 + timeCoef * 60000 });
+                                        if ((DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() -
+                                             DateTimeOffset.Parse(trend.Points[i1 - 1].DateTime.ToString()).ToUnixTimeMilliseconds()) > timeCoef * 60000)
+                                        {
+                                            points.Add(new double?[] { null,
+                                                        DateTimeOffset.Parse(trend.Points[i1-1].DateTime.ToString()).
+                                                        ToUnixTimeMilliseconds() + timeCoef * 60000 });
+                                        }
                                         else
-                                            points.Add(new double?[] { trend.Points[i1].Val, t });
+                                        {
+                                            points.Add(new double?[] { trend.Points[i1].Val,
+                                                        DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() });
+                                        }
                                     }
                                     else
                                     {
-                                        points.Add(new double?[] { trend.Points[i1].Val, t});
+                                        points.Add(new double?[] { trend.Points[i1].Val,
+                                                    DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() });
                                     }
                                 }
                             }
