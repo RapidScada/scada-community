@@ -38,7 +38,7 @@ HTPP URL: http: http://localhost/GrafanaDataProvider/api/trends
  5. Build the graph. Choosing Query - SimpleJason. Timeseries: 101 (here enter the channel number on which you want to plot the graph). It is important to enter the channel digital values. Choose the time range for which you want to get data. It is also possible to plot along multiple channels.
  
  6. It is important to set the visualization parameter during settings:
-    Stacking & Null value - set Null value = null as zero. This makes it possible to see a graph with a line break, in that time period where no data were received.
+    Stacking & Null value - set Null value = null. This makes it possible to see a graph with a line break, in that time period where no data were received.
   
 7. In Grafana get Api Key, when setting up Configuration the  and run the script as:
 
