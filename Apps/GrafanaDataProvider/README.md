@@ -33,7 +33,7 @@ Sequencing
   
   4. Configure DataSource SimpleJason in Grafana Server
 Create a data source - select the previously installed SimpleJason plugin
-HTPP URL: http: // localhost:Port(example)/api/trends
+HTPP URL: http: http://localhost/GrafanaDataProvider/api/trends
 
  5. Build the graph. Choosing Query - SimpleJason. Timeseries: 101 (here enter the channel number on which you want to plot the graph). It is important to enter the channel digital values. Choose the time range for which you want to get data. It is also possible to plot along multiple channels.
  
