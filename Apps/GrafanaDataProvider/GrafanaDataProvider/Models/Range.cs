@@ -1,7 +1,7 @@
 ﻿namespace GrafanaDataProvider.Models
 {
     /// <summary>
-    /// Time period
+    /// Represents time period for graph.
     /// </summary>
     public class Range
     {

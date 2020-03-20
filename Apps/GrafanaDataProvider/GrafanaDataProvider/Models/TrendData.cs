@@ -3,7 +3,7 @@
 namespace GrafanaDataProvider.Models
 {
     /// <summary>
-    /// Parameters transmitted to grafana for build graphic
+    /// Represents parameters transmitted to Grafana for build graph.
     /// </summary>
     public class TrendData
     {

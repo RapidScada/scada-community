@@ -92,7 +92,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Encryptor.cs" />
+    <Compile Include="Models\Password.cs" />
     <Compile Include="Models\GrafanaArg.cs" />
     <Compile Include="Models\Range.cs" />
     <Compile Include="Models\RangeRaw.cs" />
@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

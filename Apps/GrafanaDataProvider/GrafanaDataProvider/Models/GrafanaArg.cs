@@ -1,7 +1,7 @@
 ﻿namespace GrafanaDataProvider.Models
 {
     /// <summary>
-    /// Parameters passed by Grafana
+    /// Represents parameters passed by Grafana.
     /// </summary>
     public class GrafanaArg
     {

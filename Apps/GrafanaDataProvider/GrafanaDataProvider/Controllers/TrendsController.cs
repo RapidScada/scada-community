@@ -10,66 +10,54 @@ using System.IO;
 
 namespace GrafanaDataProvider.Controllers
 {
+    /// <summary>
+    /// Represents data for plotting a graph.
+    /// </summary>
     public class TrendsController : ApiController
     {
         /// <summary>
-        /// Logfile for Grafana Data Provider
+        /// The application log file name.
         /// </summary>
         private const string LogFileName = "GrafanaGrafic.log";
 
         /// <summary>
-        /// Settings params
-        /// </summary>
-        private static readonly AppSettings AppSettings;
-
-        /// <summary>
-        /// Object for log
+        /// The application log.
         /// </summary>
         private static readonly Log Log;
 
         /// <summary>
-        /// Object for data exchange with SCADA - Server
+        /// Communicates with the Server application.
         /// </summary>
         protected static ServerComm serverComm;
 
-        /// <summary>
-        /// Connection settings
-        /// </summary>
-        protected static CommSettings settings;
-
-        /// <summary>
-        /// Get the log directory
-        /// </summary>
-        private static string LogDir { get; set; }
-
-
+        
         static TrendsController()
         {
             string path = AppDomain.CurrentDomain.BaseDirectory;
-            LogDir = path + "log" + Path.DirectorySeparatorChar;
+            string LogDir = path + "log" + Path.DirectorySeparatorChar;
             Log = new Log(Log.Formats.Simple) { Encoding = Encoding.UTF8 };
             Log.FileName = LogDir + LogFileName;
 
-            AppSettings = new AppSettings();
+            AppSettings appSettings = new AppSettings();
             Log = new Log(Log.Formats.Simple) { Encoding = Encoding.UTF8 };
             Log.FileName = LogDir + LogFileName;
 
             string errMsg;
-            if (!AppSettings.Load(out errMsg))
+            if (!appSettings.Load(out errMsg))
                 Log.WriteAction(errMsg, Log.ActTypes.Exception);
             else
             {
-                settings = new CommSettings(AppSettings.ServerHost, AppSettings.ServerPort, AppSettings.ServerUser,
-                    AppSettings.ServerPwd, AppSettings.ServerTimeout);
+                CommSettings settings = new CommSettings(appSettings.ServerHost, appSettings.ServerPort, appSettings.ServerUser,
+                    appSettings.ServerPwd, appSettings.ServerTimeout);
                 serverComm = new ServerComm(settings, Log);
             }
         }
 
+#if DEBUG
         /// <summary>
         /// A simple example of building graphics.
         /// </summary>
-        /// <returns></returns>
-        /*private static List<double?[]> PointCalc(GrafanaArg grafArg)
+        private static List<double?[]> PointCalc(GrafanaArg grafArg)
         {
             long t1;
             long t0;
@@ -106,7 +94,8 @@ namespace GrafanaDataProvider.Controllers
             }
 
             return points;
-        }*/
+        }
+#endif
 
         /// <summary>
         /// Requests input channel data from Server.
@@ -131,9 +120,8 @@ namespace GrafanaDataProvider.Controllers
         }
 
         /// <summary>
-        /// Returns empty list.
+        /// Returns an empty list.
         /// </summary>
-        /// <returns></returns>
         private IEnumerable<TrendData> GetEmptyTrend()
         {
             TrendData[] trends = new TrendData[]
@@ -144,24 +132,32 @@ namespace GrafanaDataProvider.Controllers
         }
 
         /// <summary>
-        /// Definition of a minute or hour trend.
+        /// Determine the type of archive, hourly or minute.
         /// </summary>        
-        /// <returns></returns>
-        private static bool CheckDateRange(GrafanaArg grafArg)
+        private static void SelectArcType(GrafanaArg grafArg, out bool isHour, out int coef)
         {
-            bool checkDataRange = false;
+            coef = 1;
+            isHour = false;
+
             long diff = DateTimeOffset.Parse(grafArg.range.to).ToUnixTimeMilliseconds() -
                 DateTimeOffset.Parse(grafArg.range.from).ToUnixTimeMilliseconds();
 
             // more than 24 h
             if (diff / 60000 > 1440)
-                checkDataRange = true;
+            {
+                coef = 60;
+                isHour = true;
+            }
             else
-                checkDataRange = false;
-
-            return checkDataRange;
+            {
+                coef = 1;
+                isHour = false;
+            }
         }
 
+        /// <summary>
+        /// Iterates through the dates.
+        /// </summary>        
         public IEnumerable<DateTime> EachDay(DateTime from, DateTime to)
         {
             for (DateTime day = from; day.Date <= to; day = day.AddDays(1))
@@ -170,6 +166,9 @@ namespace GrafanaDataProvider.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets points of data on specific channels number.
+        /// </summary>
         [HttpGet, HttpPost]
         public IEnumerable<TrendData> GetDataForGrafana([FromBody]GrafanaArg grafanaArg)
         {
@@ -184,67 +183,59 @@ namespace GrafanaDataProvider.Controllers
                     Log.WriteError("It is not possible to receive data");
                     return GetEmptyTrend();
                 }
+                else if (!DateTime.TryParse(grafanaArg.range.from, out DateTime from) || 
+                    !DateTime.TryParse(grafanaArg.range.to, out DateTime to))
+                {
+                    Log.WriteError("It is not possible to read the dates");
+                    return GetEmptyTrend();
+                }
                 else
                 {
-                    if (DateTime.TryParse(grafanaArg.range.from, out DateTime from) &&
-                                DateTime.TryParse(grafanaArg.range.to, out DateTime to))
+                    List<double?[]> points = new List<double?[]>();                    
+
+                    SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
+                    TrendData[] trends = new TrendData[grafanaArg.targets.Length];
+
+                    for (int i = 0; i < grafanaArg.targets.Length; i++)
                     {
-                        List<double?[]> points = new List<double?[]>();
-                        bool checkRange = CheckDateRange(grafanaArg);
-                        int k = 1;
-                        if (checkRange)
-                            k = 60;
-
-                        TrendData[] trends = new TrendData[grafanaArg.targets.Length];
-
-                        for (int i = 0; i < grafanaArg.targets.Length; i++)
+                        points = new List<double?[]>();
+                        if (!int.TryParse(grafanaArg.targets[i].target.Trim(), out int cnlNum))
                         {
-                            points = new List<double?[]>();
-                            if (!int.TryParse(grafanaArg.targets[i].target.Trim(), out int cnlNum))
+                            Log.WriteError("It is not possible to read the dates for the channel " + cnlNum);
+                            trends[i] = new TrendData { target = "-1", datapoints = null };                               
+                        }
+                        else
+                        {
+                            foreach (DateTime date in EachDay(from, to))
                             {
-                                Log.WriteError("It is not possible to read the dates for the channel " + cnlNum);
-                                trends[i] = new TrendData { target = "-1", datapoints = null };                               
-                            }
-                            else
-                            {
-                                foreach (DateTime date in EachDay(from, to))
+                                Trend trend = GetTrend(date, cnlNum, isHour);
+                                for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
-                                    Trend trend = GetTrend(date, cnlNum, checkRange);
-                                    for (int i1 = 0; i1 < trend.Points.Count; i1++)
-                                    {
-                                        if (i1 > 0)
-                                        {
-                                            if ((DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() -
-                                                DateTimeOffset.Parse(trend.Points[i1 - 1].DateTime.ToString()).
-                                                ToUnixTimeMilliseconds()) > k * 60000)
-                                                points.Add(new double?[] { null,
-                                                    DateTimeOffset.Parse(trend.Points[i1-1].DateTime.ToString()).
-                                                    ToUnixTimeMilliseconds() + k* 60000 });
-                                            else
-                                                points.Add(new double?[] { trend.Points[i1].Val,
-                                                    DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).
-                                                    ToUnixTimeMilliseconds() });
+                                    DateTimeOffset time = new DateTimeOffset(trend.Points[i1].DateTime);
+                                    long t = time.ToUnixTimeMilliseconds();
 
-                                        }
+                                    if (i1 > 0)
+                                    {
+                                        DateTimeOffset time1 = new DateTimeOffset(trend.Points[i1 - 1].DateTime);
+                                        long t1 = time.ToUnixTimeMilliseconds();
+
+                                        if ((t-t1) > timeCoef * 60000)
+                                            points.Add(new double?[] { null, t1 + timeCoef * 60000 });
                                         else
-                                        {
-                                            points.Add(new double?[] { trend.Points[i1].Val,
-                                                DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).
-                                                ToUnixTimeMilliseconds() });
-                                        }
+                                            points.Add(new double?[] { trend.Points[i1].Val, t });
+                                    }
+                                    else
+                                    {
+                                        points.Add(new double?[] { trend.Points[i1].Val, t});
                                     }
                                 }
-                                trends[i] = new TrendData { target = cnlNum.ToString(), datapoints = points };
-                                Log.WriteAction("Channel data received " + cnlNum);
                             }
+                            trends[i] = new TrendData { target = cnlNum.ToString(), datapoints = points };
+                            Log.WriteAction("Channel data received " + cnlNum);
                         }
-                        return trends;
                     }
-                    else
-                    {
-                        Log.WriteError("It is not possible to read the dates");
-                        return GetEmptyTrend();
-                    }
+
+                    return trends;
                 }
             }
         }

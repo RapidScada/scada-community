@@ -1,7 +1,7 @@
 ﻿namespace GrafanaDataProvider.Models
 {
     /// <summary>
-    /// Target Options
+    /// Represents target options.
     /// </summary>
     public class Targets
     {

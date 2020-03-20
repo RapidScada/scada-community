@@ -11,7 +11,6 @@ namespace GrafanaDataProvider
     /// </summary>
     public class AppSettings : CommSettings
     {
-
         /// <summary>
         /// Initializes connection parameters. 
         /// </summary>
@@ -20,6 +19,7 @@ namespace GrafanaDataProvider
         {
 
         }
+
 
         /// <summary>
         /// Gets the specified parameter from the collection.

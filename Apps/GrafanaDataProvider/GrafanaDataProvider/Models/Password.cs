@@ -1,7 +1,7 @@
 ﻿namespace GrafanaDataProvider.Models
 {
     /// <summary>
-    /// Password to connect to the server
+    /// Represents password to connect to the server.
     /// </summary>
     public class Password
     {
