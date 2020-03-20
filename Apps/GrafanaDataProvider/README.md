@@ -48,3 +48,4 @@ This is just an example.
 We transfer the project to the server, marking Web Stat.
 
 Enjoy the new features of the Rapid SCADA.
+If during operation you find any problems in the operation of this driver, please inform at https://forum.rapidscada.org/
