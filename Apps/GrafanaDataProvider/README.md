@@ -38,3 +38,13 @@ HTPP URL: http: // localhost:Port(example)/api/trends
  5. It is important to set the visualization parameter during settings:
     Stacking & Null value - set Null value = null as zero. This makes it possible to see a graph with a line break, in that time period where no data were received.
   
+6. In Grafana get Api Key, when setting up Configuration the  and run the script as:
+
+curl -H "Authorization: Bearer eyJrIjoiVjkyRjd2a2dSQW81ZU51QW5pbDR5WmxESUNDWUY0Z0UiLCJuIjoiTXktV2ViU2l0ZS1Nb25pdG9yaW5nIiwiaWQiOjFash//path
+
+This is just an example.
+
+7. Add the link to Scada Admin -> Interface
+We transfer the project to the server, marking Web Stat.
+
+Enjoy the new features of the Rapid SCADA.
