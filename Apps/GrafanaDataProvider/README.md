@@ -26,19 +26,21 @@ Sequencing
      <add key="serverTimeout" value="10000" />
 </appSettings>
 ```
-  2. Password must be encrypted.
+  2. Start the service GrafanaDataProvider. 
+  
+  3. Password must be encrypted.
   Page index.html
   
-  3. Configure DataSource SimpleJason in Grafana Server
+  4. Configure DataSource SimpleJason in Grafana Server
 Create a data source - select the previously installed SimpleJason plugin
 HTPP URL: http: // localhost:Port(example)/api/trends
 
- 4. Build the graph. Choosing Query - SimpleJason. Timeseries: 101 (here enter the channel number on which you want to plot the graph). It is important to enter the channel digital values. Choose the time range for which you want to get data. It is also possible to plot along multiple channels.
+ 5. Build the graph. Choosing Query - SimpleJason. Timeseries: 101 (here enter the channel number on which you want to plot the graph). It is important to enter the channel digital values. Choose the time range for which you want to get data. It is also possible to plot along multiple channels.
  
- 5. It is important to set the visualization parameter during settings:
+ 6. It is important to set the visualization parameter during settings:
     Stacking & Null value - set Null value = null as zero. This makes it possible to see a graph with a line break, in that time period where no data were received.
   
-6. In Grafana get Api Key, when setting up Configuration the  and run the script as:
+7. In Grafana get Api Key, when setting up Configuration the  and run the script as:
 
 curl -H "Authorization: Bearer eyJrIjoiVjkyRjd2a2dSQW81ZU51QW5pbDR5WmxESUNDWUY0Z0UiLCJuIjoiTXktV2ViU2l0ZS1Nb25pdG9yaW5nIiwiaWQiOjFash//path
 
