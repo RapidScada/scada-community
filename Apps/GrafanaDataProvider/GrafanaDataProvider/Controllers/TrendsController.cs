@@ -45,7 +45,8 @@ namespace GrafanaDataProvider.Controllers
 
         static TrendsController()
         {
-            LogDir = @"C:\SCADA\ScadaWeb\"+ "log" + Path.DirectorySeparatorChar;
+            string path = AppDomain.CurrentDomain.BaseDirectory;
+            LogDir = path + "log" + Path.DirectorySeparatorChar;
             Log = new Log(Log.Formats.Simple) { Encoding = Encoding.UTF8 };
             Log.FileName = LogDir + LogFileName;
 
