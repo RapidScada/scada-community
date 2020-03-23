@@ -69,8 +69,18 @@ namespace GrafanaDataProvider.Controllers
             }
             else
             {
-                t1 = DateTimeOffset.Parse(grafArg.range.to).ToUnixTimeMilliseconds();
-                t0 = DateTimeOffset.Parse(grafArg.range.from).ToUnixTimeMilliseconds();
+                DateTime to = grafArg.range.to;
+                to = DateTime.SpecifyKind(to, DateTimeKind.Local).ToUniversalTime();
+                DateTimeOffset ofs = new DateTimeOffset(to);
+                long ofsValTo = ofs.ToUnixTimeMilliseconds();
+
+                DateTime from = grafArg.range.from;
+                to = DateTime.SpecifyKind(from, DateTimeKind.Local).ToUniversalTime();
+                DateTimeOffset ofs1 = new DateTimeOffset(from);
+                long ofsValFrom = ofs1.ToUnixTimeMilliseconds();
+
+                t1 = ofsValTo;
+                t0 = ofsValFrom;
             }
 
             List<double?[]> points = new List<double?[]>();
@@ -139,8 +149,16 @@ namespace GrafanaDataProvider.Controllers
             coef = 1;
             isHour = false;
 
-            long diff = DateTimeOffset.Parse(grafArg.range.to).ToUnixTimeMilliseconds() -
-                DateTimeOffset.Parse(grafArg.range.from).ToUnixTimeMilliseconds();
+            DateTime t0 = grafArg.range.to;
+            t0 = DateTime.SpecifyKind(t0, DateTimeKind.Local).ToUniversalTime();
+            DateTimeOffset ofs = new DateTimeOffset(t0);
+            long ofsValTo = ofs.ToUnixTimeMilliseconds();
+
+            DateTime t1 = grafArg.range.from;
+            t1 = DateTime.SpecifyKind(t1, DateTimeKind.Local).ToUniversalTime();
+            DateTimeOffset ofs1 = new DateTimeOffset(t1);
+            long ofsValFrom = ofs1.ToUnixTimeMilliseconds();
+            long diff = ofsValTo - ofsValFrom;
 
             // more than 24 h
             if (diff / 60000 > 1440)
@@ -183,14 +201,8 @@ namespace GrafanaDataProvider.Controllers
                     Log.WriteError("It is not possible to receive data");
                     return GetEmptyTrend();
                 }
-                else if (!DateTime.TryParse(grafanaArg.range.from, out DateTime from) || 
-                    !DateTime.TryParse(grafanaArg.range.to, out DateTime to))
-                {
-                    Log.WriteError("It is not possible to read the dates");
-                    return GetEmptyTrend();
-                }
                 else
-                {
+                { 
                     List<double?[]> points = new List<double?[]>();                    
 
                     SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
@@ -206,30 +218,31 @@ namespace GrafanaDataProvider.Controllers
                         }
                         else
                         {
-                            foreach (DateTime date in EachDay(from, to))
+                            foreach (DateTime date in EachDay (grafanaArg.range.from, grafanaArg.range.to))
                             {
                                 Trend trend = GetTrend(date, cnlNum, isHour);
                                 for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
+                                    DateTime t0 = trend.Points[i1].DateTime;
+                                    t0 = DateTime.SpecifyKind(t0, DateTimeKind.Local).ToUniversalTime();                                    
+                                    DateTimeOffset ofs = new DateTimeOffset(t0);
+                                    long ofsVal = ofs.ToUnixTimeMilliseconds();
+
                                     if (i1 > 0)
                                     {
-                                        if ((DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() -
-                                             DateTimeOffset.Parse(trend.Points[i1 - 1].DateTime.ToString()).ToUnixTimeMilliseconds()) > timeCoef * 60000)
-                                        {
-                                            points.Add(new double?[] { null,
-                                                        DateTimeOffset.Parse(trend.Points[i1-1].DateTime.ToString()).
-                                                        ToUnixTimeMilliseconds() + timeCoef * 60000 });
-                                        }
+                                        DateTime t = trend.Points[i1 - 1].DateTime;
+                                        t = DateTime.SpecifyKind(t, DateTimeKind.Local).ToUniversalTime();                                        
+                                        DateTimeOffset ofsP = new DateTimeOffset(t);
+                                        long ofsValP = ofsP.ToUnixTimeMilliseconds();
+
+                                        if ((ofsVal - ofsValP) > timeCoef * 60000)
+                                            points.Add(new double?[] { null, ofsValP + timeCoef * 60000 });
                                         else
-                                        {
-                                            points.Add(new double?[] { trend.Points[i1].Val,
-                                                        DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() });
-                                        }
+                                            points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
                                     }
                                     else
                                     {
-                                        points.Add(new double?[] { trend.Points[i1].Val,
-                                                    DateTimeOffset.Parse(trend.Points[i1].DateTime.ToString()).ToUnixTimeMilliseconds() });
+                                        points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
                                     }
                                 }
                             }

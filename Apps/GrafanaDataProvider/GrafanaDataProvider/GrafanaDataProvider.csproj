@@ -95,7 +95,6 @@
     <Compile Include="Models\Password.cs" />
     <Compile Include="Models\GrafanaArg.cs" />
     <Compile Include="Models\Range.cs" />
-    <Compile Include="Models\RangeRaw.cs" />
     <Compile Include="Models\Targets.cs" />
     <Compile Include="Models\TrendData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
