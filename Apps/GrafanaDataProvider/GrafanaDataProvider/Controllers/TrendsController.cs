@@ -11,7 +11,7 @@ using System.IO;
 namespace GrafanaDataProvider.Controllers
 {
     /// <summary>
-    /// Represents data for plotting a graph.
+    /// Represents controller for plotting a graph.
     /// </summary>
     public class TrendsController : ApiController
     {
@@ -30,7 +30,10 @@ namespace GrafanaDataProvider.Controllers
         /// </summary>
         protected static ServerComm serverComm;
 
-        
+
+        /// <summary>
+        /// Static constructor.
+        /// </summary>
         static TrendsController()
         {
             string path = AppDomain.CurrentDomain.BaseDirectory;
@@ -142,23 +145,27 @@ namespace GrafanaDataProvider.Controllers
         }
 
         /// <summary>
+        /// Returns UnixTimeMilliseconds of dateTime.
+        /// </summary>
+        private static long GetUnixTimeMilliseconds(DateTime dateTime)
+        {
+            DateTime t0 = dateTime;
+            t0 = DateTime.SpecifyKind(t0, DateTimeKind.Local).ToUniversalTime();
+            DateTimeOffset ofs = new DateTimeOffset(t0);
+            long ofsVal = ofs.ToUnixTimeMilliseconds();
+
+            return ofsVal;
+        }
+
+        /// <summary>
         /// Determine the type of archive, hourly or minute.
         /// </summary>        
         private static void SelectArcType(GrafanaArg grafArg, out bool isHour, out int coef)
         {
             coef = 1;
             isHour = false;
-
-            DateTime t0 = grafArg.range.to;
-            t0 = DateTime.SpecifyKind(t0, DateTimeKind.Local).ToUniversalTime();
-            DateTimeOffset ofs = new DateTimeOffset(t0);
-            long ofsValTo = ofs.ToUnixTimeMilliseconds();
-
-            DateTime t1 = grafArg.range.from;
-            t1 = DateTime.SpecifyKind(t1, DateTimeKind.Local).ToUniversalTime();
-            DateTimeOffset ofs1 = new DateTimeOffset(t1);
-            long ofsValFrom = ofs1.ToUnixTimeMilliseconds();
-            long diff = ofsValTo - ofsValFrom;
+           
+            long diff = GetUnixTimeMilliseconds(grafArg.range.to) - GetUnixTimeMilliseconds(grafArg.range.from);
 
             // more than 24 h
             if (diff / 60000 > 1440)
@@ -176,7 +183,7 @@ namespace GrafanaDataProvider.Controllers
         /// <summary>
         /// Iterates through the dates.
         /// </summary>        
-        public IEnumerable<DateTime> EachDay(DateTime from, DateTime to)
+        private IEnumerable<DateTime> EachDay(DateTime from, DateTime to)
         {
             for (DateTime day = from; day.Date <= to; day = day.AddDays(1))
             {
@@ -223,17 +230,11 @@ namespace GrafanaDataProvider.Controllers
                                 Trend trend = GetTrend(date, cnlNum, isHour);
                                 for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
-                                    DateTime t0 = trend.Points[i1].DateTime;
-                                    t0 = DateTime.SpecifyKind(t0, DateTimeKind.Local).ToUniversalTime();                                    
-                                    DateTimeOffset ofs = new DateTimeOffset(t0);
-                                    long ofsVal = ofs.ToUnixTimeMilliseconds();
+                                    long ofsVal = GetUnixTimeMilliseconds(trend.Points[i1].DateTime);
 
                                     if (i1 > 0)
                                     {
-                                        DateTime t = trend.Points[i1 - 1].DateTime;
-                                        t = DateTime.SpecifyKind(t, DateTimeKind.Local).ToUniversalTime();                                        
-                                        DateTimeOffset ofsP = new DateTimeOffset(t);
-                                        long ofsValP = ofsP.ToUnixTimeMilliseconds();
+                                        long ofsValP = GetUnixTimeMilliseconds(trend.Points[i1 - 1].DateTime);
 
                                         if ((ofsVal - ofsValP) > timeCoef * 60000)
                                             points.Add(new double?[] { null, ofsValP + timeCoef * 60000 });

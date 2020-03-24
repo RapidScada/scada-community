@@ -5,7 +5,7 @@ using GrafanaDataProvider.Models;
 namespace GrafanaDataProvider.Controllers
 {
     /// <summary>
-    /// Represents encrypted password to connect to the server.
+    /// Represents a controller for password encryption.
     /// </summary>
     public class PasswordsController : ApiController
     {
