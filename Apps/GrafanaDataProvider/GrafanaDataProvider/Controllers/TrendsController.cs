@@ -221,7 +221,7 @@ namespace GrafanaDataProvider.Controllers
                         if (!int.TryParse(grafanaArg.targets[i].target.Trim(), out int cnlNum))
                         {
                             Log.WriteError("It is not possible to read the dates for the channel " + cnlNum);
-                            trends[i] = new TrendData { target = "-1", datapoints = null };                               
+                            trends[i] = new TrendData { target = "-1", datapoints = null };                            
                         }
                         else
                         {
