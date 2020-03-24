@@ -11,7 +11,7 @@ using System.IO;
 namespace GrafanaDataProvider.Controllers
 {
     /// <summary>
-    /// Represents controller for plotting a graph.
+    /// Represents a controller for plotting a graph.
     /// </summary>
     public class TrendsController : ApiController
     {
@@ -145,16 +145,12 @@ namespace GrafanaDataProvider.Controllers
         }
 
         /// <summary>
-        /// Returns UnixTimeMilliseconds of dateTime.
+        /// Converts the specified date and time to the unix milliseconds.
         /// </summary>
-        private static long GetUnixTimeMilliseconds(DateTime dateTime)
+        private static long GetUnixTimeMs(DateTime dateTime)
         {
-            DateTime t0 = dateTime;
-            t0 = DateTime.SpecifyKind(t0, DateTimeKind.Local).ToUniversalTime();
-            DateTimeOffset ofs = new DateTimeOffset(t0);
-            long ofsVal = ofs.ToUnixTimeMilliseconds();
-
-            return ofsVal;
+            dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Local).ToUniversalTime();
+            return new DateTimeOffset(dateTime).ToUnixTimeMilliseconds();
         }
 
         /// <summary>
@@ -165,7 +161,7 @@ namespace GrafanaDataProvider.Controllers
             coef = 1;
             isHour = false;
            
-            long diff = GetUnixTimeMilliseconds(grafArg.range.to) - GetUnixTimeMilliseconds(grafArg.range.from);
+            long diff = GetUnixTimeMs(grafArg.range.to) - GetUnixTimeMs(grafArg.range.from);
 
             // more than 24 h
             if (diff / 60000 > 1440)
@@ -230,11 +226,11 @@ namespace GrafanaDataProvider.Controllers
                                 Trend trend = GetTrend(date, cnlNum, isHour);
                                 for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
-                                    long ofsVal = GetUnixTimeMilliseconds(trend.Points[i1].DateTime);
+                                    long ofsVal = GetUnixTimeMs(trend.Points[i1].DateTime);
 
                                     if (i1 > 0)
                                     {
-                                        long ofsValP = GetUnixTimeMilliseconds(trend.Points[i1 - 1].DateTime);
+                                        long ofsValP = GetUnixTimeMs(trend.Points[i1 - 1].DateTime);
 
                                         if ((ofsVal - ofsValP) > timeCoef * 60000)
                                             points.Add(new double?[] { null, ofsValP + timeCoef * 60000 });
