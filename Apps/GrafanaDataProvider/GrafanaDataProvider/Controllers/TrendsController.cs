@@ -32,7 +32,7 @@ namespace GrafanaDataProvider.Controllers
 
 
         /// <summary>
-        /// Static constructor.
+        /// Initializes the class.
         /// </summary>
         static TrendsController()
         {
