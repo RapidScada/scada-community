@@ -1,4 +1,4 @@
-A simple example of integrating Grafana and Rapid SCADA
+A Simple Example of Integrating Grafana and Rapid SCADA
 =============================
 Grafana is the open source analytics and monitoring solution for every database.
 
@@ -29,11 +29,11 @@ Sequencing
   2. Start the service GrafanaDataProvider. 
   
   3. Password must be encrypted.
-  Page index.html
+  Use to page index.html
   
   4. Configure DataSource SimpleJason in Grafana Server
-Create a data source - select the previously installed SimpleJason plugin
-HTPP URL: http: http://localhost/GrafanaDataProvider/api/trends
+Create a data source - select the previously installed SimpleJason plugin.
+Set HTPP URL: http: http://localhost/GrafanaDataProvider/api/trends
 
  5. Build the graph. Choosing Query - SimpleJason. Timeseries: 101 (here enter the channel number on which you want to plot the graph). It is important to enter the channel digital values. Choose the time range for which you want to get data. It is also possible to plot along multiple channels.
  
@@ -42,7 +42,9 @@ HTPP URL: http: http://localhost/GrafanaDataProvider/api/trends
   
 7. In Grafana get Api Key, when setting up Configuration the  and run the script as:
 
-curl -H "Authorization: Bearer eyJrIjoiVjkyRjd2a2dSQW81ZU51QW5pbDR5WmxESUNDWUY0Z0UiLCJuIjoiTXktV2ViU2l0ZS1Nb25pdG9yaW5nIiwiaWQiOjFash//path
+```script
+curl -H "Authorization: Bearer eyJrIjoiVjkyRjd2a2dSQW81ZU51QW5pbDR5WmxESUNDWUY0Z0UiLCJuIjoiTXktV2ViU2l0ZS1Nb25pdG9yaW5nIiwiaWQiOjFash//{path for grafana graph}
+```
 
 This is just an example.
 
