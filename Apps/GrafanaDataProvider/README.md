@@ -16,7 +16,7 @@ Sequencing
   
   -  **Description of work with GrafanaDataProvider**
   
-  1. Configure access to the server SCADA file Web.config
+  1. Configure access to the server SCADA file Web.config in GrafanaDataProvider project.
 ```xml
 <appSettings>
     <add key="serverHost" value="" />
@@ -26,12 +26,12 @@ Sequencing
      <add key="serverTimeout" value="10000" />
 </appSettings>
 ```
-  2. Start the service GrafanaDataProvider. 
-  
-  3. Password must be encrypted.
+  2. Password must be encrypted.
   Use to page index.html
   
-  4. Configure DataSource SimpleJason in Grafana Server
+  3. Start the service GrafanaDataProvider. 
+    
+  4. Configure DataSource SimpleJason in Grafana Server.
 Create a data source - select the previously installed SimpleJason plugin.
 Set HTPP URL: http: http://localhost/GrafanaDataProvider/api/trends
 
