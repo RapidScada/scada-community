@@ -48,7 +48,9 @@ curl -H "Authorization: Bearer eyJrIjoiVjkyRjd2a2dSQW81ZU51QW5pbDR5WmxESUNDWUY0Z
 
 This is just an example.
 
-7. Add the link to Scada Admin -> Interface
+7. Get a link to your graph in graphan. Panel Title -> Share->Copy.
+
+8. Add the link to Scada Admin -> Interface
 We transfer the project to the server, marking Web Stat.
 
 Enjoy the new features of the Rapid SCADA.
