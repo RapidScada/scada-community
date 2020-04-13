@@ -11,8 +11,8 @@ Sequencing
   - **Install the Simple Jason plugin**
   
   Simple JSON Datasource - a generic backend datasource
-  
-  Download plagin from the link https://grafana.com/grafana/plugins/grafana-simple-json-datasource A detailed description, as well as installation and configuration instructions, are also available here.
+    
+  You can download the plugin at https://grafana.com/grafana/plugins/grafana-simple-json-datasource. A detailed description, as well as installation and configuration instructions, are also available here.
   
   -  **Description of work with GrafanaDataProvider**
   
@@ -25,12 +25,13 @@ Sequencing
     <add key="Password value="" /
      <add key="serverTimeout" value="10000" />
 </appSettings>
-```
-  2. Password must be encrypted.
-  Use to page index.html
+```xml  
   
-  3. Start the service GrafanaDataProvider. 
-    
+  2. Password must be encrypted.
+  To encrypt the password, you can use the index.html service page GrafanaDataProvider.
+  
+  3. The manual installation sequence:
+      
   4. Configure DataSource SimpleJason in Grafana Server.
 Create a data source - select the previously installed SimpleJason plugin.
 Set HTPP URL: http: http://localhost/GrafanaDataProvider/api/trends
