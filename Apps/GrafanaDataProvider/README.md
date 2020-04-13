@@ -22,8 +22,8 @@ Sequencing
     <add key="serverHost" value="" />
     <add key="serverPort" value="" />
     <add key="serverUser" value="ScadaWeb" />
-    <add key="Password value="" /
-     <add key="serverTimeout" value="10000" />
+    <add key="Password"   value="" />
+    <add key="serverTimeout" value="10000" />
 </appSettings>
 ``` 
   
