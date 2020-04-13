@@ -53,5 +53,6 @@ This is just an example.
 8. Add the link to Scada Admin -> Interface
 We transfer the project to the server, marking Web Stat.
 
-Enjoy the new features of the Rapid SCADA.
 If during operation you find any problems in the operation of this driver, please inform at https://forum.rapidscada.org/
+
+https://www.youtube.com/watch?v=fC1lKPcui4A&t=15s
