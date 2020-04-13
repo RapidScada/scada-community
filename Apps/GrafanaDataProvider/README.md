@@ -49,7 +49,7 @@ Set HTPP URL: http: http://localhost/GrafanaDataProvider/api/trends
   
 7. In Grafana get Api Key, when setting up Configuration the  and run the script as:
 
-```script
+```xml
 curl -H "Authorization: Bearer eyJrIjoiVjkyRjd2a2dSQW81ZU51QW5pbDR5WmxESUNDWUY0Z0UiLCJuIjoiTXktV2ViU2l0ZS1Nb25pdG9yaW5nIiwiaWQiOjFash//{path for grafana graph}
 ```
 
