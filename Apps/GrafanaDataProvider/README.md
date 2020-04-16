@@ -8,6 +8,8 @@ Sequencing
  
   Download Grafana from the link https://grafana.com/grafana/download Here you will find detailed installation and configuration instructions.
   
+  Set parameter **allow_embedding = true** in file defaults.ini wich you can find C:\Program Files\GrafanaLabs\grafana\conf
+  
   - **Install the Simple Jason plugin**
   
   Simple JSON Datasource - a generic backend datasource
