@@ -37,8 +37,8 @@ namespace GrafanaDataProvider.Controllers
         protected static DataCache dataCache;
 
         /// <summary>
-        /// Get an object for thread-safe access to client cache data.
-        /// </summary>        
+        /// The object for thread-safe access to client cache data.
+        /// </summary>
         protected static DataAccess dataAccess;
 
 
@@ -222,7 +222,6 @@ namespace GrafanaDataProvider.Controllers
 
                     SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
                     TrendData[] trends = new TrendData[grafanaArg.targets.Length];
-                    string cnlName = "";
 
                     for (int i = 0; i < grafanaArg.targets.Length; i++)
                     {
@@ -234,11 +233,14 @@ namespace GrafanaDataProvider.Controllers
                         }
                         else
                         {
+                            string cnlName = "";
+                            InCnlProps inCnlProps = dataAccess.GetCnlProps(cnlNum);
+                            if (inCnlProps != null)
+                                cnlName = inCnlProps.CnlName;
+
                             foreach (DateTime date in EachDay (grafanaArg.range.from, grafanaArg.range.to))
                             {
                                 Trend trend = GetTrend(date, cnlNum, isHour);
-                                InCnlProps inCnlProps = dataAccess.GetCnlProps(cnlNum);
-                                cnlName = inCnlProps.CnlName;
 
                                 for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
@@ -269,7 +271,8 @@ namespace GrafanaDataProvider.Controllers
                                     }
                                 }
                             }
-                            trends[i] = new TrendData {  target = "["+cnlNum.ToString() + "] " + cnlName, datapoints = points };
+
+                            trends[i] = new TrendData { target = "[" + cnlNum + "] " + cnlName, datapoints = points };
                             Log.WriteAction("Channel data received " + cnlNum);
                         }
                     }
