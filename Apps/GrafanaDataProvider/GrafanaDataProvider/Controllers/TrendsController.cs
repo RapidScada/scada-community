@@ -218,8 +218,7 @@ namespace GrafanaDataProvider.Controllers
                 }
                 else
                 { 
-                    List<double?[]> points = new List<double?[]>();                    
-
+                    List<double?[]> points = new List<double?[]>();
                     SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
                     TrendData[] trends = new TrendData[grafanaArg.targets.Length];
 
