@@ -233,11 +233,6 @@ namespace GrafanaDataProvider.Controllers
                         }
                         else
                         {
-                            string cnlName = "";
-                            InCnlProps inCnlProps = dataAccess.GetCnlProps(cnlNum);
-                            if (inCnlProps != null)
-                                cnlName = inCnlProps.CnlName;
-
                             foreach (DateTime date in EachDay (grafanaArg.range.from, grafanaArg.range.to))
                             {
                                 Trend trend = GetTrend(date, cnlNum, isHour);
@@ -250,7 +245,7 @@ namespace GrafanaDataProvider.Controllers
                                     {
                                         long ofsValP = GetUnixTimeMs(trend.Points[i1 - 1].DateTime);
 
-                                        if ((ofsVal - ofsValP) > timeCoef * 60000)
+                                        if (ofsVal - ofsValP > timeCoef * 60000)
                                         {
                                             points.Add(new double?[] { null, ofsValP + timeCoef * 60000 });
                                         }
@@ -271,6 +266,9 @@ namespace GrafanaDataProvider.Controllers
                                     }
                                 }
                             }
+
+                            InCnlProps inCnlProps = dataAccess.GetCnlProps(cnlNum);
+                            string cnlName = inCnlProps == null ? "" : inCnlProps.CnlName;
 
                             trends[i] = new TrendData { target = "[" + cnlNum + "] " + cnlName, datapoints = points };
                             Log.WriteAction("Channel data received " + cnlNum);
