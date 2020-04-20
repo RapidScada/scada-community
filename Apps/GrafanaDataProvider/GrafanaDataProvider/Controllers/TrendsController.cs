@@ -7,6 +7,7 @@ using Scada.Data.Tables;
 using Utils;
 using System.Text;
 using System.IO;
+using Scada.Data.Models;
 
 namespace GrafanaDataProvider.Controllers
 {
@@ -30,6 +31,16 @@ namespace GrafanaDataProvider.Controllers
         /// </summary>
         protected static ServerComm serverComm;
 
+        /// <summary>
+        /// Cache of the data received from SCADA-Server for clients usage.
+        /// </summary>
+        protected static DataCache dataCache;
+
+        /// <summary>
+        /// The object for thread-safe access to client cache data.
+        /// </summary>
+        protected static DataAccess dataAccess;
+
 
         /// <summary>
         /// Initializes the class.
@@ -45,14 +56,15 @@ namespace GrafanaDataProvider.Controllers
             Log = new Log(Log.Formats.Simple) { Encoding = Encoding.UTF8 };
             Log.FileName = LogDir + LogFileName;
 
-            string errMsg;
-            if (!appSettings.Load(out errMsg))
+            if (!appSettings.Load(out string errMsg))
                 Log.WriteAction(errMsg, Log.ActTypes.Exception);
             else
             {
                 CommSettings settings = new CommSettings(appSettings.ServerHost, appSettings.ServerPort, appSettings.ServerUser,
                     appSettings.ServerPwd, appSettings.ServerTimeout);
                 serverComm = new ServerComm(settings, Log);
+                dataCache = new DataCache(serverComm, Log);
+                dataAccess = new DataAccess(dataCache, Log);
             }
         }
 
@@ -206,8 +218,7 @@ namespace GrafanaDataProvider.Controllers
                 }
                 else
                 { 
-                    List<double?[]> points = new List<double?[]>();                    
-
+                    List<double?[]> points = new List<double?[]>();
                     SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
                     TrendData[] trends = new TrendData[grafanaArg.targets.Length];
 
@@ -217,13 +228,14 @@ namespace GrafanaDataProvider.Controllers
                         if (!int.TryParse(grafanaArg.targets[i].target.Trim(), out int cnlNum))
                         {
                             Log.WriteError("It is not possible to read the dates for the channel " + cnlNum);
-                            trends[i] = new TrendData { target = "-1", datapoints = null };                            
+                            trends[i] = new TrendData { target = "-1", datapoints = null };
                         }
                         else
                         {
                             foreach (DateTime date in EachDay (grafanaArg.range.from, grafanaArg.range.to))
                             {
                                 Trend trend = GetTrend(date, cnlNum, isHour);
+
                                 for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
                                     long ofsVal = GetUnixTimeMs(trend.Points[i1].DateTime);
@@ -232,18 +244,32 @@ namespace GrafanaDataProvider.Controllers
                                     {
                                         long ofsValP = GetUnixTimeMs(trend.Points[i1 - 1].DateTime);
 
-                                        if ((ofsVal - ofsValP) > timeCoef * 60000)
+                                        if (ofsVal - ofsValP > timeCoef * 60000)
+                                        {
                                             points.Add(new double?[] { null, ofsValP + timeCoef * 60000 });
+                                        }
                                         else
-                                            points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
+                                        {
+                                            if (trend.Points[i1].Stat > 0)
+                                                points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
+                                            else
+                                                points.Add(new double?[] { null, ofsVal });
+                                        }
                                     }
                                     else
                                     {
-                                        points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
+                                        if (trend.Points[i1].Stat > 0)
+                                            points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
+                                        else
+                                            points.Add(new double?[] { null, ofsVal });
                                     }
                                 }
                             }
-                            trends[i] = new TrendData { target = cnlNum.ToString(), datapoints = points };
+
+                            InCnlProps inCnlProps = dataAccess.GetCnlProps(cnlNum);
+                            string cnlName = inCnlProps == null ? "" : inCnlProps.CnlName;
+
+                            trends[i] = new TrendData { target = "[" + cnlNum + "] " + cnlName, datapoints = points };
                             Log.WriteAction("Channel data received " + cnlNum);
                         }
                     }
