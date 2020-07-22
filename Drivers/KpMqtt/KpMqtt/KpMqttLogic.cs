@@ -32,6 +32,8 @@ namespace Scada.Comm.Devices
             public string NumberDecimalSeparator { get; set; }
             public double Value { get; set; }
             public bool IsPub { get; set; }
+            public string Prefix { get; set; }
+            public string Suffix { get; set; }
         }
 
         private class MQTTPubCmd : MQTTPubParam
@@ -643,7 +645,8 @@ namespace Scada.Comm.Devices
                         Topic = mqtttp.TopicName,
                         QosLevel = mqtttp.QosLevels,
                         Retain = mqtttp.Retain,
-                        Message = Encoding.UTF8.GetBytes(mqtttp.Value.ToString(Nfi))
+                        //Message = Encoding.UTF8.GetBytes(mqtttp.Value.ToString(Nfi))
+                        Message = Encoding.UTF8.GetBytes(mqtttp.Prefix + mqtttp.Value.ToString(Nfi) + mqtttp.Suffix)
                     });
 
                     mqtttp.IsPub = false;
@@ -692,7 +695,9 @@ namespace Scada.Comm.Devices
                     TopicName = MqttPTCnf.GetAttribute("TopicName"),
                     PubBehavior = MqttPTCnf.GetAttribute("PubBehavior"),
                     NumberDecimalSeparator = MqttPTCnf.GetAttribute("NDS"),
-                    Value = 0
+                    Value = 0,
+                    Prefix = MqttPTCnf.GetAttribute("Prefix"),
+                    Suffix = MqttPTCnf.GetAttribute("Suffix")
                 });
             }
 
