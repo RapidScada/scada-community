@@ -645,7 +645,6 @@ namespace Scada.Comm.Devices
                         Topic = mqtttp.TopicName,
                         QosLevel = mqtttp.QosLevels,
                         Retain = mqtttp.Retain,
-                        //Message = Encoding.UTF8.GetBytes(mqtttp.Value.ToString(Nfi))
                         Message = Encoding.UTF8.GetBytes(mqtttp.Prefix + mqtttp.Value.ToString(Nfi) + mqtttp.Suffix)
                     });
 
@@ -691,11 +690,11 @@ namespace Scada.Comm.Devices
                 MQTTPTs.Add(new MQTTPubTopic()
                 {
                     NumCnl = Convert.ToInt32(MqttPTCnf.GetAttribute("NumCnl")),
-                    QosLevels = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
-                    TopicName = MqttPTCnf.GetAttribute("TopicName"),
                     PubBehavior = MqttPTCnf.GetAttribute("PubBehavior"),
                     NumberDecimalSeparator = MqttPTCnf.GetAttribute("NDS"),
                     Value = 0,
+                    TopicName = MqttPTCnf.GetAttribute("TopicName"),
+                    QosLevels = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
                     Prefix = MqttPTCnf.GetAttribute("Prefix"),
                     Suffix = MqttPTCnf.GetAttribute("Suffix")
                 });
