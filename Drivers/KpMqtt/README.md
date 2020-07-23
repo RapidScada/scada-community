@@ -81,8 +81,8 @@ When creating a configuration file for the KpMqtt driver, the following block se
 
 "." - the symbol "." will be used as the decimal place. 
 "," - the symbol "," will be used as a decimal place.
--	**Prefix** attribute - this attribute used for MQTT messages. Should not contain trailing slash. Used for the MqttPubTopics section.
--	**Suffix** attribute - this attribute used for MQTT messages. Should not contain trailing slash. Used for the MqttPubTopics section.
+-	**Prefix** attribute - this attribute used for MQTT messages. Added before the value that is sent. Should not contain trailing slash. Used for the MqttPubTopics section.
+-	**Suffix** attribute - this attribute used for MQTT messages. Added after the value that is sent. Should not contain trailing slash. Used for the MqttPubTopics section.
 -	**NumCmd** attribute -  this attribute must contain the command number from the control channel. Used in the MqttPubCmds and MqttSubCmds sections.
 -	**CmdType** attribute - this attribute must contain the type of command. Used in the MqttSubCmds section. Must contain one of the following values:
 
