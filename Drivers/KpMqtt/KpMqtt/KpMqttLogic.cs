@@ -684,17 +684,24 @@ namespace Scada.Comm.Devices
                      
             MQTTPTs = new List<MQTTPubTopic>();
             MQTTCmds = new List<MQTTPubCmd>();
+            bool checkRetain;
 
             foreach (XmlElement MqttPTCnf in MQTTPubTopics)
             {
+                if (Boolean.TryParse(MqttPTCnf.GetAttribute("Retain"), out bool retain))
+                    checkRetain = retain;
+                else
+                    checkRetain = false;
+
                 MQTTPTs.Add(new MQTTPubTopic()
                 {
+                    TopicName = MqttPTCnf.GetAttribute("TopicName"),
+                    QosLevels = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
+                    Retain = checkRetain,
                     NumCnl = Convert.ToInt32(MqttPTCnf.GetAttribute("NumCnl")),
                     PubBehavior = MqttPTCnf.GetAttribute("PubBehavior"),
                     NumberDecimalSeparator = MqttPTCnf.GetAttribute("NDS"),
-                    Value = 0,
-                    TopicName = MqttPTCnf.GetAttribute("TopicName"),
-                    QosLevels = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
+                    Value = 0,                    
                     Prefix = MqttPTCnf.GetAttribute("Prefix"),
                     Suffix = MqttPTCnf.GetAttribute("Suffix")
                 });
@@ -704,10 +711,10 @@ namespace Scada.Comm.Devices
             {
                 MQTTCmds.Add(new MQTTPubCmd()
                 {
-                    NumCmd = MqttPTCnf.GetAttrAsInt("NumCmd"),
+                    TopicName = MqttPTCnf.GetAttribute("TopicName"),
                     QosLevels = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
                     Retain = false,
-                    TopicName = MqttPTCnf.GetAttribute("TopicName")
+                    NumCmd = MqttPTCnf.GetAttrAsInt("NumCmd")
                 });
             }
 
