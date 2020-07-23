@@ -81,6 +81,8 @@ When creating a configuration file for the KpMqtt driver, the following block se
 
 "." - the symbol "." will be used as the decimal place. 
 "," - the symbol "," will be used as a decimal place.
+-	**Prefix** attribute - this attribute used for MQTT messages. Should not contain trailing slash. Used for the MqttPubTopics section.
+-	**Suffix** attribute - this attribute used for MQTT messages. Should not contain trailing slash. Used for the MqttPubTopics section.
 -	**NumCmd** attribute -  this attribute must contain the command number from the control channel. Used in the MqttPubCmds and MqttSubCmds sections.
 -	**CmdType** attribute - this attribute must contain the type of command. Used in the MqttSubCmds section. Must contain one of the following values:
 
@@ -105,7 +107,7 @@ An example of the contents of the configuration file for the **KpMqtt** driver i
         <Topic TopicName="/rsparam1" QosLevel="0" NumCnl="600"/>
     </MqttSubTopics>
     <MqttPubTopics>
-        <Topic TopicName="/rsparam10" QosLevel="0" NumCnl="600" PubBehavior="OnChange" Retain="true" NDS="."/>
+        <Topic TopicName="/rsparam10" QosLevel="0" NumCnl="600" PubBehavior="OnChange" Retain="true" NDS="." Prefix ="" Suffix =""/>
     </MqttPubTopics>
     <MqttPubCmds>
         <Topic TopicName="/rsparam100" QosLevel="0" NumCmd="1"/>
