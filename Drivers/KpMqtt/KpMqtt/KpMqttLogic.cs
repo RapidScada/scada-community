@@ -732,13 +732,6 @@ namespace Scada.Comm.Devices
                 sp.Topics[i] = elemGroupElem.GetAttribute("TopicName");
                 sp.QosLevels[i] = (MqttQos)Convert.ToByte(elemGroupElem.GetAttribute("QosLevel"));
 
-                tagGroup.KPTags.Add(new KPTag
-                {
-                    Signal = i + 1,
-                    Name = sp.Topics[i],
-                    CnlNum = Convert.ToInt32(elemGroupElem.GetAttribute("NumCnl"))
-                });
-
                 i++;
             }
 
