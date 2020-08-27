@@ -118,7 +118,7 @@ An example of the contents of the configuration file for the **KpMqtt** driver i
         <Topic TopicName="/rsparam100000" QosLevel="0" NumCmd="10" CmdType="BinHex" KpNum="60" IDUser="0" NumCnlCtrl="501"/>
     </MqttSubCmds>
     <MqttSubJSs>
-        <Topic TopicName="/mesparam11" QosLevel="0" CnlCnt="1" JSHandlerPath="/home/RSSCADA/553/RSComm553Run/Config/job.js"/>
+        <Topic TopicName="/mesparam11" QosLevel="0" CnlCnt="1" JSHandlerPath="/SCADA/ScadaComm/Config/job.js"/>
     </MqttSubJSs>
 </DevTemplate>
 ```
