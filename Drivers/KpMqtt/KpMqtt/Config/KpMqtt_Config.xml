@@ -3,7 +3,7 @@
   <MqttParams Hostname="iot.eclipse.org" ClientID="KpMQTTrs111" Port="1883" UserName="" Password=""/>
   <RapSrvCnf ServerHost="127.0.0.1" ServerPort="10000" ServerUser="ScadaComm" ServerPwd="12345"/>
   <MqttSubTopics>
-    <Topic TopicName="/mesparam1" QosLevel="0"/>
+    <Topic TopicName="/mesparam1" QosLevel="0" NumCnl="600"/>
   </MqttSubTopics>
   <MqttPubTopics>
     <Topic TopicName="/mesparam10" QosLevel="0" NumCnl="600" PubBehavior="OnChange" Retain="true" NDS="." Prefix ="" Suffix =""/>
