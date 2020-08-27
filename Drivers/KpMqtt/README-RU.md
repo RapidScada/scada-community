@@ -106,7 +106,7 @@ MQTT - является простым сетевым протоколом, ко
     <MqttParams Hostname="iot.eclipse.org" ClientID="KpMQTTrs111" Port="1883" UserName="" Password=""/>
     <RapSrvCnf ServerHost="xxx.xxx.xxx.xxx" ServerPort="10000" ServerUser="ScadaComm" ServerPwd="12345"/>
     <MqttSubTopics>
-        <Topic TopicName="/rsparam1" QosLevel="0"/>
+        <Topic TopicName="/rsparam1" QosLevel="0" NumCnl="600"/>
     </MqttSubTopics>
     <MqttPubTopics>
         <Topic TopicName="/rsparam10" QosLevel="0" NumCnl="600" PubBehavior="OnChange" Retain="true" NDS="." Prefix ="" Suffix =""/>
