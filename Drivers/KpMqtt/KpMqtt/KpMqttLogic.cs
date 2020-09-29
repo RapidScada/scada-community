@@ -530,17 +530,19 @@ namespace Scada.Comm.Devices
 
         }
 
-        private bool RestoreConnect()
+        private bool RestoreConnect(out string errMsg)
         {
             try
             {
                 if (Transport.IsClosed)
                     Connect(MQTTSettings);
 
+                errMsg = "";
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                errMsg = ex.Message;
                 return false;
             }
         }
@@ -619,12 +621,12 @@ namespace Scada.Comm.Devices
         {
             base.Session();
 
-            if (!RestoreConnect())
+            if (!RestoreConnect(out string errMsg))
             {
                 lastCommSucc = false;
-                WriteToLog(Localization.UseRussian ? 
-                    "Ошибка при повторном подключении" : 
-                    "Error reconnecting");
+                WriteToLog(string.Format(Localization.UseRussian ? 
+                    "Ошибка при повторном подключении: {0}" : 
+                    "Error reconnecting: {0}", errMsg));
             }
             else
             {
