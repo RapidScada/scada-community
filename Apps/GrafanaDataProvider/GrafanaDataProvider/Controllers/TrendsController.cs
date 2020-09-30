@@ -90,7 +90,7 @@ namespace GrafanaDataProvider.Controllers
                 long ofsValTo = ofs.ToUnixTimeMilliseconds();
 
                 DateTime from = grafArg.range.from;
-                to = DateTime.SpecifyKind(from, DateTimeKind.Local).ToUniversalTime();
+                from = DateTime.SpecifyKind(from, DateTimeKind.Local).ToUniversalTime();
                 DateTimeOffset ofs1 = new DateTimeOffset(from);
                 long ofsValFrom = ofs1.ToUnixTimeMilliseconds();
 
@@ -104,7 +104,7 @@ namespace GrafanaDataProvider.Controllers
             if (grafArg.intervalMs > 0)
                 step = grafArg.intervalMs;
 
-            while (t0 < t1)
+            while (t0 < t1 )
             {
                 DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(t0);
                 int day = offset.Day;
@@ -240,13 +240,24 @@ namespace GrafanaDataProvider.Controllers
                                 {
                                     long ofsVal = GetUnixTimeMs(trend.Points[i1].DateTime);
 
-                                    if (i1 > 0)
+                                    if ((ofsVal > GetUnixTimeMs(grafanaArg.range.from) || ofsVal == GetUnixTimeMs(grafanaArg.range.from)) &&
+                                        (ofsVal < GetUnixTimeMs(grafanaArg.range.to) || ofsVal == GetUnixTimeMs(grafanaArg.range.to)))
                                     {
-                                        long ofsValP = GetUnixTimeMs(trend.Points[i1 - 1].DateTime);
-
-                                        if (ofsVal - ofsValP > timeCoef * 60000)
+                                        if (i1 > 0)
                                         {
-                                            points.Add(new double?[] { null, ofsValP + timeCoef * 60000 });
+                                            long ofsValP = GetUnixTimeMs(trend.Points[i1 - 1].DateTime);
+
+                                            if (ofsVal - ofsValP > timeCoef * 60000)
+                                            {
+                                                points.Add(new double?[] { null, ofsValP + timeCoef * 60000 });
+                                            }
+                                            else
+                                            {
+                                                if (trend.Points[i1].Stat > 0)
+                                                    points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
+                                                else
+                                                    points.Add(new double?[] { null, ofsVal });
+                                            }
                                         }
                                         else
                                         {
@@ -255,13 +266,6 @@ namespace GrafanaDataProvider.Controllers
                                             else
                                                 points.Add(new double?[] { null, ofsVal });
                                         }
-                                    }
-                                    else
-                                    {
-                                        if (trend.Points[i1].Stat > 0)
-                                            points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
-                                        else
-                                            points.Add(new double?[] { null, ofsVal });
                                     }
                                 }
                             }
