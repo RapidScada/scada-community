@@ -104,7 +104,7 @@ namespace GrafanaDataProvider.Controllers
             if (grafArg.intervalMs > 0)
                 step = grafArg.intervalMs;
 
-            while (t0 < t1 )
+            while (t0 < t1)
             {
                 DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(t0);
                 int day = offset.Day;
@@ -221,6 +221,8 @@ namespace GrafanaDataProvider.Controllers
                     List<double?[]> points = new List<double?[]>();
                     SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
                     TrendData[] trends = new TrendData[grafanaArg.targets.Length];
+                    long ofsValFrom = GetUnixTimeMs(grafanaArg.range.from);
+                    long ofsValTo = GetUnixTimeMs(grafanaArg.range.to);
 
                     for (int i = 0; i < grafanaArg.targets.Length; i++)
                     {
@@ -240,8 +242,8 @@ namespace GrafanaDataProvider.Controllers
                                 {
                                     long ofsVal = GetUnixTimeMs(trend.Points[i1].DateTime);
 
-                                    if ((ofsVal > GetUnixTimeMs(grafanaArg.range.from) || ofsVal == GetUnixTimeMs(grafanaArg.range.from)) &&
-                                        (ofsVal < GetUnixTimeMs(grafanaArg.range.to) || ofsVal == GetUnixTimeMs(grafanaArg.range.to)))
+                                    if ((ofsVal > ofsValFrom || ofsVal == ofsValFrom) &&
+                                        (ofsVal < ofsValTo || ofsVal == ofsValTo))
                                     {
                                         if (i1 > 0)
                                         {
