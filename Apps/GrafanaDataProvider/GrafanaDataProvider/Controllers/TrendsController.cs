@@ -84,18 +84,8 @@ namespace GrafanaDataProvider.Controllers
             }
             else
             {
-                DateTime to = grafArg.range.to;
-                to = DateTime.SpecifyKind(to, DateTimeKind.Local).ToUniversalTime();
-                DateTimeOffset ofs = new DateTimeOffset(to);
-                long ofsValTo = ofs.ToUnixTimeMilliseconds();
-
-                DateTime from = grafArg.range.from;
-                to = DateTime.SpecifyKind(from, DateTimeKind.Local).ToUniversalTime();
-                DateTimeOffset ofs1 = new DateTimeOffset(from);
-                long ofsValFrom = ofs1.ToUnixTimeMilliseconds();
-
-                t1 = ofsValTo;
-                t0 = ofsValFrom;
+                t1 = GetUnixTimeMs(grafArg.range.to);
+                t0 = GetUnixTimeMs(grafArg.range.from);
             }
 
             List<double?[]> points = new List<double?[]>();
@@ -221,6 +211,8 @@ namespace GrafanaDataProvider.Controllers
                     List<double?[]> points = new List<double?[]>();
                     SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
                     TrendData[] trends = new TrendData[grafanaArg.targets.Length];
+                    long fromMs = GetUnixTimeMs(grafanaArg.range.from);
+                    long toMs = GetUnixTimeMs(grafanaArg.range.to);
 
                     for (int i = 0; i < grafanaArg.targets.Length; i++)
                     {
@@ -238,30 +230,33 @@ namespace GrafanaDataProvider.Controllers
 
                                 for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
-                                    long ofsVal = GetUnixTimeMs(trend.Points[i1].DateTime);
+                                    long pointMs = GetUnixTimeMs(trend.Points[i1].DateTime);
 
-                                    if (i1 > 0)
+                                    if (pointMs >= fromMs && pointMs <= toMs)
                                     {
-                                        long ofsValP = GetUnixTimeMs(trend.Points[i1 - 1].DateTime);
-
-                                        if (ofsVal - ofsValP > timeCoef * 60000)
+                                        if (i1 > 0)
                                         {
-                                            points.Add(new double?[] { null, ofsValP + timeCoef * 60000 });
+                                            long prevMs = GetUnixTimeMs(trend.Points[i1 - 1].DateTime);
+
+                                            if (pointMs - prevMs > timeCoef * 60000)
+                                            {
+                                                points.Add(new double?[] { null, prevMs + timeCoef * 60000 });
+                                            }
+                                            else
+                                            {
+                                                if (trend.Points[i1].Stat > 0)
+                                                    points.Add(new double?[] { trend.Points[i1].Val, pointMs });
+                                                else
+                                                    points.Add(new double?[] { null, pointMs });
+                                            }
                                         }
                                         else
                                         {
                                             if (trend.Points[i1].Stat > 0)
-                                                points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
+                                                points.Add(new double?[] { trend.Points[i1].Val, pointMs });
                                             else
-                                                points.Add(new double?[] { null, ofsVal });
+                                                points.Add(new double?[] { null, pointMs });
                                         }
-                                    }
-                                    else
-                                    {
-                                        if (trend.Points[i1].Stat > 0)
-                                            points.Add(new double?[] { trend.Points[i1].Val, ofsVal });
-                                        else
-                                            points.Add(new double?[] { null, ofsVal });
                                     }
                                 }
                             }
