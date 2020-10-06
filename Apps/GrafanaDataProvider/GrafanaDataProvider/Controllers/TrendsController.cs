@@ -150,9 +150,24 @@ namespace GrafanaDataProvider.Controllers
         /// Converts the specified date and time to the unix milliseconds.
         /// </summary>
         private static long GetUnixTimeMs(DateTime dateTime)
-        {
-            dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Local).ToUniversalTime();
+        {           
             return new DateTimeOffset(dateTime).ToUnixTimeMilliseconds();
+        }
+
+        /// <summary>
+        /// Converts the specified date and time to the local time.
+        /// </summary>
+        private static DateTime UtcToLocalTime(DateTime dateTime)
+        {
+            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc).ToLocalTime();
+        }
+
+        /// <summary>
+        /// Converts local date and time to the univeral time.
+        /// </summary>
+        private static DateTime LocalToUtcTime(DateTime dateTime)
+        {
+            return DateTime.SpecifyKind(dateTime, DateTimeKind.Local).ToUniversalTime();
         }
 
         /// <summary>
@@ -226,17 +241,17 @@ namespace GrafanaDataProvider.Controllers
                         {
                             foreach (DateTime date in EachDay (grafanaArg.range.from, grafanaArg.range.to))
                             {
-                                Trend trend = GetTrend(date, cnlNum, isHour);
+                                Trend trend = GetTrend(UtcToLocalTime(date), cnlNum, isHour);
 
                                 for (int i1 = 0; i1 < trend.Points.Count; i1++)
                                 {
-                                    long pointMs = GetUnixTimeMs(trend.Points[i1].DateTime);
+                                    long pointMs = GetUnixTimeMs(LocalToUtcTime(trend.Points[i1].DateTime));
 
                                     if (pointMs >= fromMs && pointMs <= toMs)
                                     {
                                         if (i1 > 0)
                                         {
-                                            long prevMs = GetUnixTimeMs(trend.Points[i1 - 1].DateTime);
+                                            long prevMs = GetUnixTimeMs(LocalToUtcTime(trend.Points[i1 - 1].DateTime));
 
                                             if (pointMs - prevMs > timeCoef * 60000)
                                             {
@@ -257,7 +272,7 @@ namespace GrafanaDataProvider.Controllers
                                             else
                                                 points.Add(new double?[] { null, pointMs });
                                         }
-                                    }
+                                     }
                                 }
                             }
 
