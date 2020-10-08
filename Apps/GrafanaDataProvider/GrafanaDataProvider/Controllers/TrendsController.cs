@@ -29,17 +29,17 @@ namespace GrafanaDataProvider.Controllers
         /// <summary>
         /// Communicates with the Server application.
         /// </summary>
-        protected static ServerComm serverComm;
+        protected static readonly ServerComm serverComm;
 
         /// <summary>
         /// Cache of the data received from SCADA-Server for clients usage.
         /// </summary>
-        protected static DataCache dataCache;
+        protected static readonly DataCache dataCache;
 
         /// <summary>
         /// The object for thread-safe access to client cache data.
         /// </summary>
-        protected static DataAccess dataAccess;
+        protected static readonly DataAccess dataAccess;
 
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace GrafanaDataProvider.Controllers
             Trend trend = new Trend(cnlNum);
             bool dataReceived = serverComm.ReceiveTrend(tableName, date, trend);
 
-            serverComm.Close();
+            //serverComm.Close();
 
             if (dataReceived)
                 trend.LastFillTime = DateTime.UtcNow;
@@ -175,9 +175,6 @@ namespace GrafanaDataProvider.Controllers
         /// </summary>        
         private static void SelectArcType(GrafanaArg grafArg, out bool isHour, out int coef)
         {
-            coef = 1;
-            isHour = false;
-           
             long diff = GetUnixTimeMs(grafArg.range.to) - GetUnixTimeMs(grafArg.range.from);
 
             // more than 24 h
@@ -223,7 +220,6 @@ namespace GrafanaDataProvider.Controllers
                 }
                 else
                 { 
-                    List<double?[]> points = new List<double?[]>();
                     SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
                     TrendData[] trends = new TrendData[grafanaArg.targets.Length];
                     long fromMs = GetUnixTimeMs(grafanaArg.range.from);
@@ -231,7 +227,7 @@ namespace GrafanaDataProvider.Controllers
 
                     for (int i = 0; i < grafanaArg.targets.Length; i++)
                     {
-                        points = new List<double?[]>();
+                        List<double?[]> points = new List<double?[]>();
                         if (!int.TryParse(grafanaArg.targets[i].target.Trim(), out int cnlNum))
                         {
                             Log.WriteError("It is not possible to read the dates for the channel " + cnlNum);
