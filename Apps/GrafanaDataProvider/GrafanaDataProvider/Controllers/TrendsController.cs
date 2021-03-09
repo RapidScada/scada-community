@@ -8,6 +8,7 @@ using Utils;
 using System.Text;
 using System.IO;
 using Scada.Data.Models;
+using System.Text.RegularExpressions;
 
 namespace GrafanaDataProvider.Controllers
 {
@@ -67,8 +68,9 @@ namespace GrafanaDataProvider.Controllers
                 dataAccess = new DataAccess(dataCache, Log);
             }
         }
-
+        /*
 #if DEBUG
+        
         /// <summary>
         /// A simple example of building graphics.
         /// </summary>
@@ -76,7 +78,7 @@ namespace GrafanaDataProvider.Controllers
         {
             long t1;
             long t0;
-
+            
             if (grafArg.range == null)
             {
                 t1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -84,8 +86,8 @@ namespace GrafanaDataProvider.Controllers
             }
             else
             {
-                t1 = GetUnixTimeMs(grafArg.range.to);
-                t0 = GetUnixTimeMs(grafArg.range.from);
+                t1 = grafArg.range.to;
+                t0 = grafArg.range.from;
             }
 
             List<double?[]> points = new List<double?[]>();
@@ -111,6 +113,7 @@ namespace GrafanaDataProvider.Controllers
             return points;
         }
 #endif
+        */
 
         /// <summary>
         /// Requests input channel data from Server.
@@ -155,6 +158,26 @@ namespace GrafanaDataProvider.Controllers
         }
 
         /// <summary>
+        /// Converts the specified unix milliseconds time to date and time. (added 04/01/2021 by Folharini)
+        /// </summary>
+        private static DateTime GetDateFromUnixMs(long timeMilliseconds)
+        {
+            DateTime date = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            date = date.AddMilliseconds(timeMilliseconds).ToLocalTime();
+            return date;
+
+        }
+
+        /// <summary>
+        /// Converts the specified string to DateTime and later to Unix (added 08/03/2021 by Folharini)
+        /// </summary>
+        private static long GetUnixFromString(string timeString)
+        {
+            DateTime date = Convert.ToDateTime(timeString);
+            return new DateTimeOffset(date).ToUnixTimeMilliseconds();
+        }
+        
+        /// <summary>
         /// Converts the specified date and time to the local time.
         /// </summary>
         private static DateTime UtcToLocalTime(DateTime dateTime)
@@ -175,7 +198,7 @@ namespace GrafanaDataProvider.Controllers
         /// </summary>        
         private static void SelectArcType(GrafanaArg grafArg, out bool isHour, out int coef)
         {
-            long diff = GetUnixTimeMs(grafArg.range.to) - GetUnixTimeMs(grafArg.range.from);
+            long diff = grafArg.endTime - grafArg.startTime;
 
             // more than 24 h
             if (diff / 60000 > 1440)
@@ -219,11 +242,156 @@ namespace GrafanaDataProvider.Controllers
                     return GetEmptyTrend();
                 }
                 else
-                { 
+                {
                     SelectArcType(grafanaArg, out bool isHour, out int timeCoef);
                     TrendData[] trends = new TrendData[grafanaArg.targets.Length];
-                    long fromMs = GetUnixTimeMs(grafanaArg.range.from);
-                    long toMs = GetUnixTimeMs(grafanaArg.range.to);
+                    /// long fromMs = GetUnixTimeMs(grafanaArg.range.from);
+                    /// long toMs = GetUnixTimeMs(grafanaArg.range.to);
+                    /// 
+
+                    /// Range conversion to Unix
+                    long fromMs = 0;
+                    long toMs = 0;
+
+                    string fromStrNum = grafanaArg.range.from;
+                    string fromStr = Regex.Replace(fromStrNum, "[0-9]", "");
+                    string _strfromNum = Regex.Replace(fromStrNum, "[^0-9.]", "");
+                    if (!String.IsNullOrEmpty(fromStr))
+                    {
+                        if (fromStr == "--T::.Z")
+                        {
+                            fromMs = GetUnixFromString(fromStrNum);
+                        }
+                        if (fromStr == "h")
+                        {
+                            if (Int32.TryParse(_strfromNum, out int fromNum))
+                            {
+                                long fromNumMs = fromNum * 3600000;
+                                DateTimeOffset now = DateTimeOffset.UtcNow;
+                                long nowMilliseconds = now.ToUnixTimeMilliseconds();
+                                fromMs = nowMilliseconds - fromNumMs;
+                            } else
+                            {
+                                Log.WriteError("It is not possible to parse the number of hours from " + fromStrNum);
+                            }
+                        }
+                        if (fromStr == "m")
+                        {
+                            if (Int32.TryParse(_strfromNum, out int fromNum))
+                            {
+                                long fromNumMs = fromNum * 60000;
+                                DateTimeOffset now = DateTimeOffset.UtcNow;
+                                long nowMilliseconds = now.ToUnixTimeMilliseconds();
+                                fromMs = nowMilliseconds - fromNumMs;
+                            }
+                            else
+                            {
+                                Log.WriteError("It is not possible to parse the number of minutes from " + fromStrNum);
+                            }
+                        }
+                        if (fromStr == "s")
+                        {
+                            if (Int32.TryParse(_strfromNum, out int fromNum))
+                            {
+                                long fromNumMs = fromNum * 1000;
+                                DateTimeOffset now = DateTimeOffset.UtcNow;
+                                long nowMilliseconds = now.ToUnixTimeMilliseconds();
+                                fromMs = nowMilliseconds - fromNumMs;
+                            }
+                            else
+                            {
+                                Log.WriteError("It is not possible to parse the number of seconds from " + fromStrNum);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(Int64.TryParse(fromStrNum, out long _intfromMs))
+                        {
+                            fromMs = _intfromMs;
+                            Log.WriteAction("Defined 'from' time: " + fromMs);
+                        }
+                        else
+                        {
+                            Log.WriteError("'From' string is null or empty: " + fromStrNum);
+                        }
+                    }
+
+                    string toStrNum = grafanaArg.range.to;
+                    string toStr = Regex.Replace(toStrNum, "[0-9]", "");
+                    string _strtoNum = Regex.Replace(toStrNum, "[^0-9.]", "");
+                    if (!String.IsNullOrEmpty(toStr))
+                    {
+                        if (toStr == "--T::.Z") // If data received is in DateTime form, as original version for SimpleJson
+                        {
+                            toMs = GetUnixFromString(toStrNum);
+                        }
+                        if (toStr == "now-h")
+                        {
+                            if (Int32.TryParse(_strtoNum, out int toNum))
+                            {
+                                long toNumMs = toNum * 3600000;
+                                DateTimeOffset now = DateTimeOffset.UtcNow;
+                                long nowMilliseconds = now.ToUnixTimeMilliseconds();
+                                toMs = nowMilliseconds - toNumMs;
+                            }
+                            else
+                            {
+                                Log.WriteError("It is not possible to parse the number of hours from " + toStrNum);
+                            }
+                        }
+                        if (toStr == "now-m")
+                        {
+                            if (Int32.TryParse(_strtoNum, out int toNum))
+                            {
+                                long toNumMs = toNum * 60000;
+                                DateTimeOffset now = DateTimeOffset.UtcNow;
+                                long nowMilliseconds = now.ToUnixTimeMilliseconds();
+                                toMs = nowMilliseconds - toNumMs;
+                            }
+                            else
+                            {
+                                Log.WriteError("It is not possible to parse the number of minutes from " + toStrNum);
+                            }
+                        }
+                        if (toStr == "now-s")
+                        {
+                            if (Int32.TryParse(_strtoNum, out int toNum))
+                            {
+                                long toNumMs = toNum * 1000;
+                                DateTimeOffset now = DateTimeOffset.UtcNow;
+                                long nowMilliseconds = now.ToUnixTimeMilliseconds();
+                                toMs = nowMilliseconds - toNumMs;
+                            }
+                            else
+                            {
+                                Log.WriteError("It is not possible to parse the number of seconds from " + toStrNum);
+                            }
+                        }
+                        if (toStr == "now")
+                        {
+                            //long toNumMs = toNum * 1000;
+                            DateTimeOffset now = DateTimeOffset.UtcNow;
+                            long nowMilliseconds = now.ToUnixTimeMilliseconds();
+                            toMs = nowMilliseconds;
+                        }
+                    }
+                    else
+                    {
+                        if (Int64.TryParse(toStrNum, out long _inttoMs))
+                        {
+                            toMs = _inttoMs;
+                            Log.WriteAction("Defined 'from' time: " + toMs);
+                        }
+                        else
+                        {
+                            Log.WriteError("'From' string is null or empty: " + toStrNum);
+                        }
+                    }
+
+                    grafanaArg.startTime = fromMs;
+                    grafanaArg.endTime = toMs;
+
 
                     for (int i = 0; i < grafanaArg.targets.Length; i++)
                     {
@@ -235,7 +403,7 @@ namespace GrafanaDataProvider.Controllers
                         }
                         else
                         {
-                            foreach (DateTime date in EachDay (grafanaArg.range.from, grafanaArg.range.to))
+                            foreach (DateTime date in EachDay (GetDateFromUnixMs(fromMs), GetDateFromUnixMs(toMs)))
                             {
                                 Trend trend = GetTrend(UtcToLocalTime(date), cnlNum, isHour);
 

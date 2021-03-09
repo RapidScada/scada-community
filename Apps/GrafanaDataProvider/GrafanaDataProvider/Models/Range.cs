@@ -7,7 +7,7 @@ namespace GrafanaDataProvider.Models
     /// </summary>
     public class Range
     {
-        public /*string*/DateTime from { get; set; }
-        public /*string*/DateTime to { get; set; }
+        public string from { get; set; }
+        public string to { get; set; }
     }
 }
