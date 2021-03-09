@@ -258,9 +258,9 @@ namespace GrafanaDataProvider.Controllers
                     string _strfromNum = Regex.Replace(fromStrNum, "[^0-9.]", "");
                     if (!String.IsNullOrEmpty(fromStr))
                     {
-                        if (fromStr == "--T::.Z")
+                        if (fromStr == "--T::.Z") // If data received is in DateTime form, as original version for SimpleJson eg: 2021-03-09T15:42:21.500Z
                         {
-                            fromMs = GetUnixFromString(fromStrNum);
+                            fromMs = GetUnixFromString(fromStrNum); 
                         }
                         if (fromStr == "h")
                         {
@@ -322,7 +322,7 @@ namespace GrafanaDataProvider.Controllers
                     string _strtoNum = Regex.Replace(toStrNum, "[^0-9.]", "");
                     if (!String.IsNullOrEmpty(toStr))
                     {
-                        if (toStr == "--T::.Z") // If data received is in DateTime form, as original version for SimpleJson
+                        if (toStr == "--T::.Z") // If data received is in DateTime form, as original version for SimpleJson eg: 2021-03-09T15:42:21.500Z
                         {
                             toMs = GetUnixFromString(toStrNum);
                         }
