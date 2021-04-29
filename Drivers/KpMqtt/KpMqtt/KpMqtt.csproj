@@ -52,6 +52,15 @@
   <ItemGroup>
     <Compile Include="KpMqttLogic.cs" />
     <Compile Include="KpMqttView.cs" />
+    <Compile Include="Mqtt\Config\DeviceConfig.cs" />
+    <Compile Include="Mqtt\Config\MqttPubCmd.cs" />
+    <Compile Include="Mqtt\Config\MqttPubParam.cs" />
+    <Compile Include="Mqtt\Config\MqttPubTopic.cs" />
+    <Compile Include="Mqtt\Config\MqttSubCmd.cs" />
+    <Compile Include="Mqtt\Config\MqttSubJS.cs" />
+    <Compile Include="Mqtt\Config\MqttSubTopic.cs" />
+    <Compile Include="Mqtt\Config\MqttTopic.cs" />
+    <Compile Include="Mqtt\Config\PubBehavior.cs" />
     <Compile Include="StriderMqtt\ConnectionPackets.cs" />
     <Compile Include="StriderMqtt\Constants.cs" />
     <Compile Include="StriderMqtt\EventArgs.cs" />

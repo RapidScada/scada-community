@@ -1,5 +1,6 @@
 ﻿using Jint;
 using Scada.Client;
+using Scada.Comm.Devices.Mqtt.Config;
 using Scada.Data.Configuration;
 using Scada.Data.Models;
 using Scada.Data.Tables;
@@ -17,92 +18,27 @@ namespace Scada.Comm.Devices
 {
     public class KpMqttLogic : KPLogic
     {
-        #region The classes to publish data
-        private abstract class MQTTPubParam
-        {
-            public string TopicName { get; set; }
-            public MqttQos QosLevels { get; set; }
-            public bool Retain { get; set; }
-        }
-
-        private class MQTTPubTopic : MQTTPubParam
-        {
-            public int NumCnl { get; set; }
-            public string PubBehavior { get; set; }
-            public string NumberDecimalSeparator { get; set; }
-            public double Value { get; set; }
-            public bool IsPub { get; set; }
-            public string Prefix { get; set; }
-            public string Suffix { get; set; }
-        }
-
-        private class MQTTPubCmd : MQTTPubParam
-        {
-            public int NumCmd { get; set; }
-        }
-        #endregion
-
-        #region The classes for JS scenarios
-        private class MQTTSubCmd : Command
-        {
-            public string TopicName { get; set; }
-            public int IDUser { get; set; }
-            public string CmdType { get; set; }
-            public int NumCnlCtrl { get; set; }
-        }
-
-        private class MQTTSubJS
-        {
-            public string TopicName { get; set; }
-            public string JSHandlerPath { get; set; }
-            public string JSHandler { get; private set; }
-            public int CnlCnt { get; set; }
-
-            public bool LoadJSHandler()
-            {
-                bool IsJSLoad = false;
-                if (JSHandlerPath != "")
-                {
-                    try
-                    {
-                        StreamReader sr = new StreamReader(JSHandlerPath);
-                        JSHandler = sr.ReadToEnd();
-                        IsJSLoad = true;
-                    }
-                    catch
-                    {
-                        IsJSLoad = false;
-                    }
-                }
-                return IsJSLoad;
-            }
-        }
-
-        private class JSVal
+        private class JsVal
         {
             public int CnlNum { get; set; }
             public int Stat { get; set; }
             public double Val { get; set; }
         }
-        #endregion
 
         private const int PollTimeout = 1000; // timeout to check status, microseconds
         private static readonly NumberFormatInfo Nfi = new NumberFormatInfo();
 
-        // all in ms
-        private int LastRead;
-        private int LastWrite;
         private XmlNode MQTTSettings;
 
         private IMqttTransport Transport;
         private IMqttPersistence Persistence;
 
-        private MqttConnectionArgs connArgs;
-        private List<MQTTPubTopic> MQTTPTs;
-        private List<MQTTPubCmd> MQTTCmds;
         private SubscribePacket sp;
-        private List<MQTTSubCmd> SubCmds;
-        private List<MQTTSubJS> SubJSs;
+        private MqttConnectionArgs connArgs;
+        private List<MqttPubTopic> PubTopics;
+        private List<MqttPubCmd> PubCmds;
+        private List<MqttSubCmd> SubCmds;
+        private List<MqttSubJS> SubJSs;
 
 
         public KpMqttLogic(int number) : base(number)
@@ -254,7 +190,6 @@ namespace Scada.Comm.Devices
             {
                 WriteToLog("Send packet");
                 Transport.Write(packet);
-                LastWrite = Environment.TickCount;
             }
         }
 
@@ -280,7 +215,6 @@ namespace Scada.Comm.Devices
             {
                 WriteToLog("Receive packet");
                 PacketBase packet = Transport.Read();
-                LastRead = Environment.TickCount;
                 HandleReceivedPacket(packet);
             }
             catch (MqttProtocolException ex)
@@ -347,17 +281,17 @@ namespace Scada.Comm.Devices
             {
                 Engine jsEng = new Engine();
 
-                foreach (MQTTSubJS mqttjs in SubJSs)
+                foreach (MqttSubJS mqttjs in SubJSs)
                 {
                     if (mqttjs.TopicName == packet.Topic)
                     {
 
                         SrezTableLight.Srez srez = new SrezTableLight.Srez(DateTime.Now, mqttjs.CnlCnt);
-                        List<JSVal> jsvals = new List<JSVal>();
+                        List<JsVal> jsvals = new List<JsVal>();
 
                         for (int i = 0; i < srez.CnlNums.Length; i++)
                         {
-                            JSVal jsval = new JSVal();
+                            JsVal jsval = new JsVal();
 
                             jsvals.Add(jsval);
                         }
@@ -372,7 +306,7 @@ namespace Scada.Comm.Devices
                             jsEng.Execute(mqttjs.JSHandler);
                             int i = 0;
 
-                            foreach (JSVal jsvl in jsvals)
+                            foreach (JsVal jsvl in jsvals)
                             {
 
                                 SrezTableLight.CnlData cnlData = new SrezTableLight.CnlData
@@ -401,7 +335,7 @@ namespace Scada.Comm.Devices
 
             if (SubCmds.Count > 0)
             {
-                foreach (MQTTSubCmd mqttcmd in SubCmds)
+                foreach (MqttSubCmd mqttcmd in SubCmds)
                 {
                     if (mqttcmd.TopicName == packet.Topic)
                     {
@@ -557,9 +491,10 @@ namespace Scada.Comm.Devices
                 Username = MQTTSettings.Attributes.GetNamedItem("UserName").Value,
                 Password = MQTTSettings.Attributes.GetNamedItem("Password").Value,
                 //Keepalive = TimeSpan.FromSeconds(60),
-                ReadTimeout = TimeSpan.FromMilliseconds(ReqParams.Timeout),
-                WriteTimeout = TimeSpan.FromMilliseconds(ReqParams.Timeout)
             };
+
+            connArgs.ReadTimeout = TimeSpan.FromMilliseconds(ReqParams.Timeout);
+            connArgs.WriteTimeout = TimeSpan.FromMilliseconds(ReqParams.Timeout);
 
             Persistence = new InMemoryPersistence();
             Transport = new TcpTransport(connArgs.Hostname, connArgs.Port) { Version = connArgs.Version };
@@ -589,7 +524,7 @@ namespace Scada.Comm.Devices
                 "Disconnect from MQTT broker");
         }
 
-        private List<MQTTPubTopic> GetValues(List<MQTTPubTopic> MqttPTs)
+        private List<MqttPubTopic> GetValues(List<MqttPubTopic> MqttPTs)
         {
             if (CommLineSvc.ServerComm != null)
             {
@@ -597,18 +532,19 @@ namespace Scada.Comm.Devices
                 CommLineSvc.ServerComm.ReceiveSrezTable("current.dat", stl);
                 SrezTableLight.Srez srez = stl.SrezList.Values[0];
 
-                foreach (MQTTPubTopic MqttPT in MqttPTs)
+                foreach (MqttPubTopic MqttPT in MqttPTs)
                 {
                     if (srez.GetCnlData(MqttPT.NumCnl, out SrezTableLight.CnlData cnlData))
                     {
-                        if (MqttPT.PubBehavior == "OnChange")
+                        if (MqttPT.PubBehavior == PubBehavior.OnChange)
                         {
                             if (MqttPT.Value != cnlData.Val)
                                 MqttPT.IsPub = true;
                         }
-
-                        if (MqttPT.PubBehavior == "OnAlways")
+                        else if (MqttPT.PubBehavior == PubBehavior.OnAlways)
+                        {
                             MqttPT.IsPub = true;
+                        }
 
                         MqttPT.Value = cnlData.Val;
                     }
@@ -635,17 +571,17 @@ namespace Scada.Comm.Devices
                 else
                     Send(new PingreqPacket()); // send ping request
 
-                foreach (MQTTPubTopic mqtttp in GetValues(MQTTPTs))
+                foreach (MqttPubTopic mqtttp in GetValues(PubTopics))
                 {
                     if (!mqtttp.IsPub)
                         continue;
 
-                    Nfi.NumberDecimalSeparator = mqtttp.NumberDecimalSeparator;
+                    Nfi.NumberDecimalSeparator = mqtttp.DecimalSeparator;
 
                     Publish(new PublishPacket
                     {
                         Topic = mqtttp.TopicName,
-                        QosLevel = mqtttp.QosLevels,
+                        QosLevel = mqtttp.QosLevel,
                         Retain = mqtttp.Retain,
                         Message = Encoding.UTF8.GetBytes(mqtttp.Prefix + mqtttp.Value.ToString(Nfi) + mqtttp.Suffix)
                     });
@@ -662,7 +598,7 @@ namespace Scada.Comm.Devices
         {
             List<TagGroup> tagGroups = new List<TagGroup>();
             TagGroup tagGroup = new TagGroup("GroupMQTT");
-            TagGroup tagGroupJS = new TagGroup("GoupJS");
+            //TagGroup tagGroupJS = new TagGroup("GoupJS");
 
             XmlDocument xmlDoc = new XmlDocument();
             string filename = ReqParams.CmdLine.Trim();
@@ -673,36 +609,27 @@ namespace Scada.Comm.Devices
             XmlNode MQTTPubCmds = xmlDoc.DocumentElement.SelectSingleNode("MqttPubCmds");
             XmlNode MQTTSubCmds = xmlDoc.DocumentElement.SelectSingleNode("MqttSubCmds");
             XmlNode MQTTSubJSs = xmlDoc.DocumentElement.SelectSingleNode("MqttSubJSs");
-            XmlNode RapSrvCnf = xmlDoc.DocumentElement.SelectSingleNode("RapSrvCnf");
             MQTTSettings = xmlDoc.DocumentElement.SelectSingleNode("MqttParams");
 
-            CommSettings cs = new CommSettings()
-            {
-                ServerHost = RapSrvCnf.Attributes.GetNamedItem("ServerHost").Value,
-                ServerPort = Convert.ToInt32(RapSrvCnf.Attributes.GetNamedItem("ServerPort").Value),
-                ServerUser = RapSrvCnf.Attributes.GetNamedItem("ServerUser").Value,
-                ServerPwd = RapSrvCnf.Attributes.GetNamedItem("ServerPwd").Value
-            };
-                     
-            MQTTPTs = new List<MQTTPubTopic>();
-            MQTTCmds = new List<MQTTPubCmd>();
+            PubTopics = new List<MqttPubTopic>();
+            PubCmds = new List<MqttPubCmd>();
             bool checkRetain;
 
             foreach (XmlElement MqttPTCnf in MQTTPubTopics)
             {
-                if (Boolean.TryParse(MqttPTCnf.GetAttribute("Retain"), out bool retain))
+                if (bool.TryParse(MqttPTCnf.GetAttribute("Retain"), out bool retain))
                     checkRetain = retain;
                 else
                     checkRetain = false;
 
-                MQTTPTs.Add(new MQTTPubTopic()
+                PubTopics.Add(new MqttPubTopic()
                 {
                     TopicName = MqttPTCnf.GetAttribute("TopicName"),
-                    QosLevels = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
+                    QosLevel = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
                     Retain = checkRetain,
                     NumCnl = Convert.ToInt32(MqttPTCnf.GetAttribute("NumCnl")),
-                    PubBehavior = MqttPTCnf.GetAttribute("PubBehavior"),
-                    NumberDecimalSeparator = MqttPTCnf.GetAttribute("NDS"),
+                    PubBehavior = MqttPTCnf.GetAttrAsEnum<PubBehavior>("PubBehavior"),
+                    DecimalSeparator = MqttPTCnf.GetAttribute("NDS"),
                     Value = 0,                    
                     Prefix = MqttPTCnf.GetAttribute("Prefix"),
                     Suffix = MqttPTCnf.GetAttribute("Suffix")
@@ -711,10 +638,10 @@ namespace Scada.Comm.Devices
 
             foreach (XmlElement MqttPTCnf in MQTTPubCmds)
             {
-                MQTTCmds.Add(new MQTTPubCmd()
+                PubCmds.Add(new MqttPubCmd()
                 {
                     TopicName = MqttPTCnf.GetAttribute("TopicName"),
-                    QosLevels = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
+                    QosLevel = (MqttQos)Convert.ToByte(MqttPTCnf.GetAttribute("QosLevel")),
                     Retain = false,
                     NumCmd = MqttPTCnf.GetAttrAsInt("NumCmd")
                 });
@@ -747,14 +674,14 @@ namespace Scada.Comm.Devices
             tagGroups.Add(tagGroup);
             InitKPTags(tagGroups);
 
-            SubCmds = new List<MQTTSubCmd>();
+            SubCmds = new List<MqttSubCmd>();
 
             foreach (XmlElement elemGroupElem in MQTTSubCmds.ChildNodes)
             {
                 sp.Topics[i] = elemGroupElem.GetAttribute("TopicName");
                 sp.QosLevels[i] = (MqttQos)Convert.ToByte(elemGroupElem.GetAttribute("QosLevel"));
 
-                MQTTSubCmd cmd = new MQTTSubCmd()
+                MqttSubCmd cmd = new MqttSubCmd()
                 {
                     TopicName = sp.Topics[i],
                     CmdNum = elemGroupElem.GetAttrAsInt("NumCmd", 0),
@@ -768,14 +695,14 @@ namespace Scada.Comm.Devices
                 i++;
             }
 
-            SubJSs = new List<MQTTSubJS>();
+            SubJSs = new List<MqttSubJS>();
 
             foreach (XmlElement elemGroupElem in MQTTSubJSs.ChildNodes)
             {
                 sp.Topics[i] = elemGroupElem.GetAttribute("TopicName");
                 sp.QosLevels[i] = (MqttQos)Convert.ToByte(elemGroupElem.GetAttribute("QosLevel"));
 
-                MQTTSubJS msjs = new MQTTSubJS()
+                MqttSubJS msjs = new MqttSubJS()
                 {
                     TopicName = sp.Topics[i],
                     CnlCnt = elemGroupElem.GetAttrAsInt("CnlCnt", 1),
@@ -796,7 +723,7 @@ namespace Scada.Comm.Devices
         {
             base.SendCmd(cmd); 
 
-            foreach (MQTTPubCmd mpc in MQTTCmds)
+            foreach (MqttPubCmd mpc in PubCmds)
             {
                 if (mpc.NumCmd == cmd.CmdNum)
                 {
@@ -806,7 +733,7 @@ namespace Scada.Comm.Devices
                         Publish(new PublishPacket()
                         {
                             Topic = mpc.TopicName,
-                            QosLevel = mpc.QosLevels,
+                            QosLevel = mpc.QosLevel,
                             Retain = mpc.Retain,
                             Message = Encoding.UTF8.GetBytes(cmd.CmdVal.ToString(Nfi))
                         });
@@ -816,7 +743,7 @@ namespace Scada.Comm.Devices
                         Publish(new PublishPacket()
                         {
                             Topic = mpc.TopicName,
-                            QosLevel = mpc.QosLevels,
+                            QosLevel = mpc.QosLevel,
                             Retain = mpc.Retain,
                             Message = cmd.CmdData
                         });
