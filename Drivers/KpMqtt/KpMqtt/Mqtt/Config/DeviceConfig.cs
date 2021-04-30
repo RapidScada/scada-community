@@ -32,6 +32,11 @@ namespace Scada.Comm.Devices.Mqtt.Config
         public List<MqttSubTopic> SubTopics { get; private set; }
 
         /// <summary>
+        /// Gets the subscriptions processed by JavaScript.
+        /// </summary>
+        public List<MqttSubJS> SubJSs { get; private set; }
+
+        /// <summary>
         /// Gets the topics to publish.
         /// </summary>
         public List<MqttPubTopic> PubTopics { get; private set; }
@@ -45,11 +50,6 @@ namespace Scada.Comm.Devices.Mqtt.Config
         /// Gets the commands sent to Server when new data is received.
         /// </summary>
         public List<MqttSubCmd> SubCmds { get; private set; }
-
-        /// <summary>
-        /// Gets the subscriptions processed by JavaScript.
-        /// </summary>
-        public List<MqttSubJS> SubJSs { get; private set; }
 
 
         /// <summary>
@@ -102,6 +102,23 @@ namespace Scada.Comm.Devices.Mqtt.Config
                     }
                 }
 
+                if (xmlDoc.DocumentElement.SelectSingleNode("MqttSubJSs") is XmlNode mqttSubJSsNode)
+                {
+                    foreach (XmlElement topicElem in mqttSubJSsNode.SelectNodes("Topic"))
+                    {
+                        MqttSubJS subJS = new MqttSubJS
+                        {
+                            TopicName = topicElem.GetAttribute("TopicName"),
+                            QosLevel = (MqttQos)topicElem.GetAttrAsInt("QosLevel"),
+                            CnlCnt = topicElem.GetAttrAsInt("CnlCnt", 1),
+                            JSHandlerPath = topicElem.GetAttribute("JSHandlerPath")
+                        };
+
+                        if (subJS.LoadJSHandler())
+                            SubJSs.Add(subJS);
+                    }
+                }
+
                 if (xmlDoc.DocumentElement.SelectSingleNode("MqttPubTopics") is XmlNode mqttPubTopicsNode)
                 {
                     foreach (XmlElement topicElem in mqttPubTopicsNode.SelectNodes("Topic"))
@@ -149,23 +166,6 @@ namespace Scada.Comm.Devices.Mqtt.Config
                     }
                 }
 
-                if (xmlDoc.DocumentElement.SelectSingleNode("MqttSubJSs") is XmlNode mqttSubJSsNode)
-                {
-                    foreach (XmlElement topicElem in mqttSubJSsNode.SelectNodes("Topic"))
-                    {
-                        MqttSubJS subJS = new MqttSubJS
-                        {
-                            TopicName = topicElem.GetAttribute("TopicName"),
-                            QosLevel = (MqttQos)topicElem.GetAttrAsInt("QosLevel"),
-                            CnlCnt = topicElem.GetAttrAsInt("CnlCnt", 1),
-                            JSHandlerPath = topicElem.GetAttribute("JSHandlerPath")
-                        };
-
-                        if (subJS.LoadJSHandler())
-                            SubJSs.Add(subJS);
-                    }
-                }
-
                 errMsg = "";
                 return true;
             }
@@ -179,9 +179,11 @@ namespace Scada.Comm.Devices.Mqtt.Config
         /// <summary>
         /// Gets the configuration file name.
         /// </summary>
-        public static string GetFileName(string configDir, int kpNum)
+        public static string GetFileName(string configDir, int kpNum, string defaultFileName)
         {
-            return Path.Combine(configDir, "KpMqtt_" + CommUtils.AddZeros(kpNum, 3) + ".xml");
+            return string.IsNullOrWhiteSpace(defaultFileName)
+                ? Path.Combine(configDir, "KpMqtt_" + CommUtils.AddZeros(kpNum, 3) + ".xml")
+                : Path.Combine(configDir, defaultFileName.Trim());
         }
     }
 }

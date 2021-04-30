@@ -34,8 +34,8 @@ namespace Scada.Comm.Devices
         private SubscribePacket subscribePacket;
 
         private Dictionary<string, MqttSubTopic> subTopics;
-        private Dictionary<string, MqttSubCmd> subCmds;
         private Dictionary<string, MqttSubJS> subJSs;
+        private Dictionary<string, MqttSubCmd> subCmds;
 
 
         public KpMqttLogic(int number) : base(number)
@@ -94,11 +94,11 @@ namespace Scada.Comm.Devices
         {
             subscribePacket = new SubscribePacket();
             subTopics = new Dictionary<string, MqttSubTopic>();
-            subCmds = new Dictionary<string, MqttSubCmd>();
             subJSs = new Dictionary<string, MqttSubJS>();
+            subCmds = new Dictionary<string, MqttSubCmd>();
 
             int subscrIdx = 0;
-            int subscrCnt = deviceConfig.SubTopics.Count + deviceConfig.SubCmds.Count + deviceConfig.SubJSs.Count;
+            int subscrCnt = deviceConfig.SubTopics.Count + deviceConfig.SubJSs.Count + deviceConfig.SubCmds.Count;
 
             subscribePacket.Topics = new string[subscrCnt];
             subscribePacket.QosLevels = new MqttQos[subscrCnt];
@@ -111,19 +111,19 @@ namespace Scada.Comm.Devices
                 subscrIdx++;
             }
 
-            foreach (MqttSubCmd subCmd in deviceConfig.SubCmds)
-            {
-                subscribePacket.Topics[subscrIdx] = subCmd.TopicName;
-                subscribePacket.QosLevels[subscrIdx] = subCmd.QosLevel;
-                subCmds[subCmd.TopicName] = subCmd;
-                subscrIdx++;
-            }
-
             foreach (MqttSubJS subJS in deviceConfig.SubJSs)
             {
                 subscribePacket.Topics[subscrIdx] = subJS.TopicName;
                 subscribePacket.QosLevels[subscrIdx] = subJS.QosLevel;
                 subJSs[subJS.TopicName] = subJS;
+                subscrIdx++;
+            }
+
+            foreach (MqttSubCmd subCmd in deviceConfig.SubCmds)
+            {
+                subscribePacket.Topics[subscrIdx] = subCmd.TopicName;
+                subscribePacket.QosLevels[subscrIdx] = subCmd.QosLevel;
+                subCmds[subCmd.TopicName] = subCmd;
                 subscrIdx++;
             }
         }
@@ -618,11 +618,13 @@ namespace Scada.Comm.Devices
             }
             else
             {
+                // receive data
                 if (mqttTransport.Poll(PollTimeout))
                     ReceivePacket();
                 else
                     Send(new PingreqPacket()); // send ping request
 
+                // publish data
                 foreach (MqttPubTopic pubTopic in GetValues(deviceConfig.PubTopics))
                 {
                     if (!pubTopic.IsPub)
@@ -649,9 +651,7 @@ namespace Scada.Comm.Devices
         public override void OnAddedToCommLine()
         {
             deviceConfig = new DeviceConfig();
-            string configFileName = string.IsNullOrEmpty(ReqParams.CmdLine)
-                ? DeviceConfig.GetFileName(AppDirs.ConfigDir, Number)
-                : Path.Combine(AppDirs.ConfigDir, ReqParams.CmdLine.Trim());
+            string configFileName = DeviceConfig.GetFileName(AppDirs.ConfigDir, Number, ReqParams.CmdLine);
 
             if (deviceConfig.Load(configFileName, out string errMsg))
             {

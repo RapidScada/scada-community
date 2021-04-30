@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DevTemplate>
+  <MqttParams 
+    Hostname="broker.mqtt-dashboard.com" 
+    ClientID="YOUR_ID_HERE" 
+    Port="1883" 
+    UserName="" 
+    Password="" />
+
+  <!-- Subscriptions -->
+  <MqttSubTopics>
+    <Topic TopicName="/myparam1" QosLevel="0" />
+  </MqttSubTopics>
+
+  <!-- Subscriptions processed by JavaScript -->
+  <MqttSubJSs>
+    <Topic TopicName="/myparam11" QosLevel="0" CnlCnt="2" JSHandlerPath="C:\SCADA\ScadaComm\Config\KpMqtt_Job.js" />
+  </MqttSubJSs>
+
+  <!-- Topics to publish -->
+  <!-- PubBehavior = OnChange | OnAlways -->
+  <MqttPubTopics>
+    <Topic TopicName="/myparam10" QosLevel="0" NumCnl="1000" PubBehavior="OnChange" Retain="true" NDS="." Prefix ="" Suffix ="" />
+  </MqttPubTopics>
+
+  <!-- Commands to publish data when a telecommand is sent -->
+  <MqttPubCmds>
+    <Topic TopicName="/myparam100" QosLevel="0" NumCmd="1"/>
+  </MqttPubCmds>
+
+  <!-- Commands sent to Server when new data is received -->
+  <!-- CmdType = St | BinTxt | BinHex | Req -->
+  <MqttSubCmds>
+    <Topic TopicName="/myparam1000" QosLevel="0" CmdType="St" IDUser="0" NumCnlCtrl="500" />
+    <Topic TopicName="/myparam1001" QosLevel="0" CmdType="BinHex" IDUser="0" NumCnlCtrl="501" />
+    <Topic TopicName="/myparam1002" QosLevel="0" CmdType="Req" IDUser="0" NumCnlCtrl="502" />
+  </MqttSubCmds>
+</DevTemplate>
