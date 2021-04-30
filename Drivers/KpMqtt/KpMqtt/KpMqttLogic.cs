@@ -400,6 +400,8 @@ namespace Scada.Comm.Devices
                     WriteToLog((Localization.UseRussian ? 
                         "Ошибка выполнения JavaScript: " :
                         "Error executing JavaScript: ") + ex.Message);
+
+                    InvalidateCurData(subJS.TagIndex, subJS.CnlCnt);
                 }
             }
 
