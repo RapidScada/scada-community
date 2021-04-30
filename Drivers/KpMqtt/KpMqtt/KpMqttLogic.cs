@@ -315,6 +315,7 @@ namespace Scada.Comm.Devices
         private void OnPublishReceived(PublishPacket packet)
         {
             string packetMsg = Encoding.UTF8.GetString(packet.Message);
+            WriteToLog(packet.Topic + " = " + packetMsg);
 
             // execute JavaScript
             foreach (MqttSubJS subJS in deviceConfig.SubJSs)
@@ -381,7 +382,7 @@ namespace Scada.Comm.Devices
 
                             if (double.IsNaN(cmdVal))
                             {
-                                WriteToLog(CommPhrases.IncorrectCmdData);
+                                WriteToLog(CommonPhrases.RealRequired);
                             }
                             else
                             {
@@ -403,13 +404,20 @@ namespace Scada.Comm.Devices
                             }
                             else
                             {
-                                WriteToLog(CommPhrases.IncorrectCmdData);
+                                WriteToLog(CommonPhrases.NotHexadecimal);
                             }
                             break;
 
                         case CmdType.Req:
-                            CommLineSvc.ServerComm?.SendRequestCommand(
-                                subCmd.IDUser, subCmd.NumCnlCtrl, subCmd.KPNum, out bool result4);
+                            if (int.TryParse(packetMsg, out int kpNum))
+                            {
+                                CommLineSvc.ServerComm?.SendRequestCommand(
+                                    subCmd.IDUser, subCmd.NumCnlCtrl, kpNum, out bool result4);
+                            }
+                            else
+                            {
+                                WriteToLog(CommonPhrases.IntegerRequired);
+                            }
                             break;
                     }
 
@@ -422,7 +430,6 @@ namespace Scada.Comm.Devices
             {
                 if (kpTag.Name == packet.Topic)
                 {
-                    WriteToLog(packet.Topic + " = " + packetMsg);
                     double tagVal = ScadaUtils.StrToDouble(packetMsg);
 
                     if (double.IsNaN(tagVal))
@@ -549,11 +556,11 @@ namespace Scada.Comm.Devices
 
         private List<MqttPubTopic> GetValues(List<MqttPubTopic> pubTopics)
         {
-            if (CommLineSvc.ServerComm != null)
+            if (CommLineSvc.ServerComm != null && pubTopics.Count > 0)
             {
-                SrezTableLight stl = new SrezTableLight();
-                CommLineSvc.ServerComm.ReceiveSrezTable("current.dat", stl);
-                SrezTableLight.Srez srez = stl.SrezList.Values[0];
+                SrezTableLight srezTable = new SrezTableLight();
+                CommLineSvc.ServerComm.ReceiveSrezTable("current.dat", srezTable);
+                SrezTableLight.Srez srez = srezTable.SrezList.Values[0];
 
                 foreach (MqttPubTopic pubTopic in pubTopics)
                 {

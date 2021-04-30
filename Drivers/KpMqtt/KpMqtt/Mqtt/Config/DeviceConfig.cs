@@ -146,7 +146,6 @@ namespace Scada.Comm.Devices.Mqtt.Config
                             CmdType = topicElem.GetAttrAsEnum<CmdType>("CmdType"),
                             IDUser = topicElem.GetAttrAsInt("IDUser"),
                             NumCnlCtrl = topicElem.GetAttrAsInt("NumCnlCtrl"),
-                            KPNum = topicElem.GetAttrAsInt("KPNum")
                         });
                     }
                 }

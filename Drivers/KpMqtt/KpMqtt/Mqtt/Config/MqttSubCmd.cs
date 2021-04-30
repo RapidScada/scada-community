@@ -10,6 +10,5 @@ namespace Scada.Comm.Devices.Mqtt.Config
         public CmdType CmdType { get; set; }
         public int IDUser { get; set; }
         public int NumCnlCtrl { get; set; }
-        public int KPNum { get; set; }
     }
 }

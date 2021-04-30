@@ -28,7 +28,7 @@
   <MqttSubCmds>
     <Topic TopicName="/mesparam1000" QosLevel="0" CmdType="St" IDUser="0" NumCnlCtrl="500" />
     <Topic TopicName="/mesparam1001" QosLevel="0" CmdType="BinHex" IDUser="0" NumCnlCtrl="501" />
-    <Topic TopicName="/mesparam1002" QosLevel="0" CmdType="Req" IDUser="0" NumCnlCtrl="502" KPNum="60" />
+    <Topic TopicName="/mesparam1002" QosLevel="0" CmdType="Req" IDUser="0" NumCnlCtrl="502" />
   </MqttSubCmds>
 
   <!-- Subscriptions processed by JavaScript -->
