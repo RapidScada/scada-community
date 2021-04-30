@@ -20,7 +20,7 @@ namespace Scada.Comm.Devices
     {
         private class JsVal
         {
-            public int CnlNum { get; set; }
+            public string TagName { get; set; }
             public int Stat { get; set; }
             public double Val { get; set; }
         }
@@ -33,6 +33,10 @@ namespace Scada.Comm.Devices
         private IMqttPersistence mqttPersistence;
         private SubscribePacket subscribePacket;
 
+        private Dictionary<string, MqttSubTopic> subTopics;
+        private Dictionary<string, MqttSubCmd> subCmds;
+        private Dictionary<string, MqttSubJS> subJSs;
+
 
         public KpMqttLogic(int number) : base(number)
         {
@@ -44,25 +48,55 @@ namespace Scada.Comm.Devices
         private void InitDeviceTags()
         {
             List<TagGroup> tagGroups = new List<TagGroup>();
-            TagGroup tagGroup = new TagGroup("GroupMQTT");
             int signal = 1;
 
-            foreach (MqttSubTopic subTopic in deviceConfig.SubTopics)
+            if (deviceConfig.SubTopics.Count > 0)
             {
-                tagGroup.KPTags.Add(new KPTag
+                TagGroup tagGroup = new TagGroup("Subscriptions");
+                tagGroups.Add(tagGroup);
+
+                foreach (MqttSubTopic subTopic in deviceConfig.SubTopics)
                 {
-                    Signal = signal++,
-                    Name = subTopic.TopicName
-                });
+                    subTopic.TagIndex = signal - 1;
+
+                    tagGroup.KPTags.Add(new KPTag
+                    {
+                        Signal = signal++,
+                        Name = subTopic.TopicName
+                    });
+                }
             }
 
-            tagGroups.Add(tagGroup);
+            if (deviceConfig.SubJSs.Count > 0)
+            {
+                TagGroup tagGroup = new TagGroup("JS Subscriptions");
+                tagGroups.Add(tagGroup);
+
+                foreach (MqttSubJS subJS in deviceConfig.SubJSs)
+                {
+                    subJS.TagIndex = signal - 1;
+
+                    for (int i = 0, cnt = subJS.CnlCnt; i < cnt; i++)
+                    {
+                        tagGroup.KPTags.Add(new KPTag
+                        {
+                            Signal = signal++,
+                            Name = subJS.TopicName + " [" + i + "]"
+                        }); ;
+                    }
+                }
+            }
+
             InitKPTags(tagGroups);
         }
 
         private void InitSubscribePacket()
         {
             subscribePacket = new SubscribePacket();
+            subTopics = new Dictionary<string, MqttSubTopic>();
+            subCmds = new Dictionary<string, MqttSubCmd>();
+            subJSs = new Dictionary<string, MqttSubJS>();
+
             int subscrIdx = 0;
             int subscrCnt = deviceConfig.SubTopics.Count + deviceConfig.SubCmds.Count + deviceConfig.SubJSs.Count;
 
@@ -73,6 +107,7 @@ namespace Scada.Comm.Devices
             {
                 subscribePacket.Topics[subscrIdx] = subTopic.TopicName;
                 subscribePacket.QosLevels[subscrIdx] = subTopic.QosLevel;
+                subTopics[subTopic.TopicName] = subTopic;
                 subscrIdx++;
             }
 
@@ -80,6 +115,7 @@ namespace Scada.Comm.Devices
             {
                 subscribePacket.Topics[subscrIdx] = subCmd.TopicName;
                 subscribePacket.QosLevels[subscrIdx] = subCmd.QosLevel;
+                subCmds[subCmd.TopicName] = subCmd;
                 subscrIdx++;
             }
 
@@ -87,6 +123,7 @@ namespace Scada.Comm.Devices
             {
                 subscribePacket.Topics[subscrIdx] = subJS.TopicName;
                 subscribePacket.QosLevels[subscrIdx] = subJS.QosLevel;
+                subJSs[subJS.TopicName] = subJS;
                 subscrIdx++;
             }
         }
@@ -317,127 +354,102 @@ namespace Scada.Comm.Devices
             string packetMsg = Encoding.UTF8.GetString(packet.Message);
             WriteToLog(packet.Topic + " = " + packetMsg);
 
-            // execute JavaScript
-            foreach (MqttSubJS subJS in deviceConfig.SubJSs)
+            // get subscription data
+            if (subTopics.TryGetValue(packet.Topic, out MqttSubTopic subTopic))
             {
-                if (subJS.TopicName == packet.Topic)
+                double tagVal = ScadaUtils.StrToDouble(packetMsg);
+
+                if (double.IsNaN(tagVal))
+                    InvalidateCurData(subTopic.TagIndex, 1);
+                else
+                    SetCurData(subTopic.TagIndex, tagVal, 1);
+            }
+
+            // execute JavaScript
+            if (subJSs.TryGetValue(packet.Topic, out MqttSubJS subJS))
+            {
+                Engine jsEngine = new Engine();
+                JsVal[] jsvals = new JsVal[subJS.CnlCnt];
+
+                for (int i = 0; i < subJS.CnlCnt; i++)
                 {
-                    Engine jsEngine = new Engine();
-                    SrezTableLight.Srez srez = new SrezTableLight.Srez(DateTime.Now, subJS.CnlCnt);
-                    List<JsVal> jsvals = new List<JsVal>();
+                    jsvals[i] = new JsVal();
+                }
 
-                    for (int i = 0; i < srez.CnlNums.Length; i++)
+                jsEngine.SetValue("mqttJS", subJS);
+                jsEngine.SetValue("InMsg", packetMsg);
+                jsEngine.SetValue("jsvals", jsvals);
+                jsEngine.SetValue("mylog", new Action<string>(WriteToLog));
+
+                try
+                {
+                    jsEngine.Execute(subJS.JSHandler);
+
+                    for (int i = 0; i < subJS.CnlCnt; i++)
                     {
-                        JsVal jsval = new JsVal();
+                        JsVal jsval = jsvals[i];
+                        int tagIndex = subJS.TagIndex + i;
+                        SetCurData(tagIndex, jsval.Val, jsval.Stat);
 
-                        jsvals.Add(jsval);
+                        if (!string.IsNullOrEmpty(jsval.TagName))
+                            KPTags[tagIndex].Name = jsval.TagName;
                     }
-
-                    jsEngine.SetValue("mqttJS", subJS);
-                    jsEngine.SetValue("InMsg", packetMsg);
-                    jsEngine.SetValue("jsvals", jsvals);
-                    jsEngine.SetValue("mylog", new Action<string>(WriteToLog));
-
-                    try
-                    {
-                        jsEngine.Execute(subJS.JSHandler);
-                        int i = 0;
-
-                        foreach (JsVal jsvl in jsvals)
-                        {
-
-                            SrezTableLight.CnlData cnlData = new SrezTableLight.CnlData
-                            {
-                                Stat = jsvl.Stat,
-                                Val = jsvl.Val
-                            };
-
-                            srez.CnlNums[i] = jsvl.CnlNum;
-                            srez.SetCnlData(jsvl.CnlNum, cnlData);
-                            i++;
-                        }
-
-                        CommLineSvc.ServerComm?.SendSrez(srez, out bool sndres);
-                    }
-                    catch
-                    {
-                        WriteToLog(Localization.UseRussian ? 
-                            "Ошибка обработки JS" : 
-                            "Error executing JS");
-                    }
-
-                    break;
+                }
+                catch (Exception ex)
+                {
+                    WriteToLog((Localization.UseRussian ? 
+                        "Ошибка выполнения JavaScript: " :
+                        "Error executing JavaScript: ") + ex.Message);
                 }
             }
 
             // send commands to Server
-            foreach (MqttSubCmd subCmd in deviceConfig.SubCmds)
+            if (subCmds.TryGetValue(packet.Topic, out MqttSubCmd subCmd))
             {
-                if (subCmd.TopicName == packet.Topic)
+                switch (subCmd.CmdType)
                 {
-                    switch (subCmd.CmdType)
-                    {
-                        case CmdType.St:
-                            double cmdVal = ScadaUtils.StrToDouble(packetMsg);
+                    case CmdType.St:
+                        double cmdVal = ScadaUtils.StrToDouble(packetMsg);
 
-                            if (double.IsNaN(cmdVal))
-                            {
-                                WriteToLog(CommonPhrases.RealRequired);
-                            }
-                            else
-                            {
-                                CommLineSvc.ServerComm?.SendStandardCommand(
-                                    subCmd.IDUser, subCmd.NumCnlCtrl, cmdVal, out bool result1);
-                            }
-                            break;
+                        if (double.IsNaN(cmdVal))
+                        {
+                            WriteToLog(CommonPhrases.RealRequired);
+                        }
+                        else
+                        {
+                            CommLineSvc.ServerComm?.SendStandardCommand(
+                                subCmd.IDUser, subCmd.NumCnlCtrl, cmdVal, out bool result1);
+                        }
+                        break;
 
-                        case CmdType.BinTxt:
+                    case CmdType.BinTxt:
+                        CommLineSvc.ServerComm?.SendBinaryCommand(
+                            subCmd.IDUser, subCmd.NumCnlCtrl, packet.Message, out bool result2);
+                        break;
+
+                    case CmdType.BinHex:
+                        if (ScadaUtils.HexToBytes(packetMsg.Trim(), out byte[] cmdData))
+                        {
                             CommLineSvc.ServerComm?.SendBinaryCommand(
-                                subCmd.IDUser, subCmd.NumCnlCtrl, packet.Message, out bool result2);
-                            break;
+                                subCmd.IDUser, subCmd.NumCnlCtrl, cmdData, out bool result3);
+                        }
+                        else
+                        {
+                            WriteToLog(CommonPhrases.NotHexadecimal);
+                        }
+                        break;
 
-                        case CmdType.BinHex:
-                            if (ScadaUtils.HexToBytes(packetMsg.Trim(), out byte[] cmdData))
-                            {
-                                CommLineSvc.ServerComm?.SendBinaryCommand(
-                                    subCmd.IDUser, subCmd.NumCnlCtrl, cmdData, out bool result3);
-                            }
-                            else
-                            {
-                                WriteToLog(CommonPhrases.NotHexadecimal);
-                            }
-                            break;
-
-                        case CmdType.Req:
-                            if (int.TryParse(packetMsg, out int kpNum))
-                            {
-                                CommLineSvc.ServerComm?.SendRequestCommand(
-                                    subCmd.IDUser, subCmd.NumCnlCtrl, kpNum, out bool result4);
-                            }
-                            else
-                            {
-                                WriteToLog(CommonPhrases.IntegerRequired);
-                            }
-                            break;
-                    }
-
-                    break;
-                }
-            }
-
-            // get device tag data
-            foreach (KPTag kpTag in KPTags)
-            {
-                if (kpTag.Name == packet.Topic)
-                {
-                    double tagVal = ScadaUtils.StrToDouble(packetMsg);
-
-                    if (double.IsNaN(tagVal))
-                        InvalidateCurData(kpTag.Index, 1);
-                    else
-                        SetCurData(kpTag.Index, tagVal, 1);
-
-                    break;
+                    case CmdType.Req:
+                        if (int.TryParse(packetMsg, out int kpNum))
+                        {
+                            CommLineSvc.ServerComm?.SendRequestCommand(
+                                subCmd.IDUser, subCmd.NumCnlCtrl, kpNum, out bool result4);
+                        }
+                        else
+                        {
+                            WriteToLog(CommonPhrases.IntegerRequired);
+                        }
+                        break;
                 }
             }
 
@@ -560,23 +572,27 @@ namespace Scada.Comm.Devices
             {
                 SrezTableLight srezTable = new SrezTableLight();
                 CommLineSvc.ServerComm.ReceiveSrezTable("current.dat", srezTable);
-                SrezTableLight.Srez srez = srezTable.SrezList.Values[0];
 
-                foreach (MqttPubTopic pubTopic in pubTopics)
+                if (srezTable.SrezList.Count > 0)
                 {
-                    if (srez.GetCnlData(pubTopic.NumCnl, out SrezTableLight.CnlData cnlData))
-                    {
-                        if (pubTopic.PubBehavior == PubBehavior.OnChange)
-                        {
-                            if (pubTopic.Value != cnlData.Val)
-                                pubTopic.IsPub = true;
-                        }
-                        else if (pubTopic.PubBehavior == PubBehavior.OnAlways)
-                        {
-                            pubTopic.IsPub = true;
-                        }
+                    SrezTableLight.Srez srez = srezTable.SrezList.Values[0];
 
-                        pubTopic.Value = cnlData.Val;
+                    foreach (MqttPubTopic pubTopic in pubTopics)
+                    {
+                        if (srez.GetCnlData(pubTopic.NumCnl, out SrezTableLight.CnlData cnlData))
+                        {
+                            if (pubTopic.PubBehavior == PubBehavior.OnChange)
+                            {
+                                if (pubTopic.Value != cnlData.Val)
+                                    pubTopic.IsPub = true;
+                            }
+                            else if (pubTopic.PubBehavior == PubBehavior.OnAlways)
+                            {
+                                pubTopic.IsPub = true;
+                            }
+
+                            pubTopic.Value = cnlData.Val;
+                        }
                     }
                 }
             }

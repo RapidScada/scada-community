@@ -5,5 +5,6 @@
     /// </summary>
     internal class MqttSubTopic : MqttTopic
     {
+        public int TagIndex { get; set; }
     }
 }

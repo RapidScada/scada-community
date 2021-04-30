@@ -114,7 +114,6 @@ namespace Scada.Comm.Devices.Mqtt.Config
                             NumCnl = topicElem.GetAttrAsInt("NumCnl"),
                             PubBehavior = topicElem.GetAttrAsEnum<PubBehavior>("PubBehavior"),
                             DecimalSeparator = topicElem.GetAttribute("NDS"),
-                            Value = 0,
                             Prefix = topicElem.GetAttribute("Prefix"),
                             Suffix = topicElem.GetAttribute("Suffix")
                         });

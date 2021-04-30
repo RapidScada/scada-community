@@ -33,6 +33,6 @@
 
   <!-- Subscriptions processed by JavaScript -->
   <MqttSubJSs>
-    <Topic TopicName="/mesparam11" QosLevel="0" CnlCnt="1" JSHandlerPath="C:\SCADA\ScadaComm\Config\job.js" />
+    <Topic TopicName="/mesparam11" QosLevel="0" CnlCnt="2" JSHandlerPath="C:\SCADA\ScadaComm\Config\job.js" />
   </MqttSubJSs>
 </DevTemplate>

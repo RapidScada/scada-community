@@ -1,9 +1,7 @@
+var data = JSON.parse(InMsg);
 
-var obj2 = JSON.parse(InMsg);
+jsvals[0].TagName = "My tag";
+jsvals[0].Stat = data.Stat;
+jsvals[0].Val = data.Val;
 
-jsvals[0].CnlNum=obj2.Num;
-jsvals[0].Stat=obj2.Stat;
-jsvals[0].Val=obj2.Val;
-
-mylog("Return script OK");
-
+mylog("Script completed successfully");

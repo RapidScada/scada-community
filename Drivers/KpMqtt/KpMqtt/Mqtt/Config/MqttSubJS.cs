@@ -5,7 +5,7 @@ namespace Scada.Comm.Devices.Mqtt.Config
     /// <summary>
     /// Represents a subscription to a topic that is processed by Java Script.
     /// </summary>
-    internal class MqttSubJS : MqttTopic
+    internal class MqttSubJS : MqttSubTopic
     {
         public string JSHandlerPath { get; set; }
         public string JSHandler { get; private set; }
