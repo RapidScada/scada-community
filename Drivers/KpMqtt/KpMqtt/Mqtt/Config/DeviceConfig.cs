@@ -37,12 +37,12 @@ namespace Scada.Comm.Devices.Mqtt.Config
         public List<MqttPubTopic> PubTopics { get; private set; }
 
         /// <summary>
-        /// Gets the commands executed when a telecommand is sent.
+        /// Gets the commands to publish data when a telecommand is sent.
         /// </summary>
         public List<MqttPubCmd> PubCmds { get; private set; }
 
         /// <summary>
-        /// Gets the commands executed when new data is received.
+        /// Gets the commands sent to Server when new data is received.
         /// </summary>
         public List<MqttSubCmd> SubCmds { get; private set; }
 
@@ -142,11 +142,11 @@ namespace Scada.Comm.Devices.Mqtt.Config
                         SubCmds.Add(new MqttSubCmd
                         {
                             TopicName = topicElem.GetAttribute("TopicName"),
-                            CmdNum = topicElem.GetAttrAsInt("NumCmd", 0),
-                            CmdType = topicElem.GetAttribute("CmdType"),
-                            KPNum = topicElem.GetAttrAsInt("KPNum", 0),
-                            IDUser = topicElem.GetAttrAsInt("IDUser", 0),
-                            NumCnlCtrl = topicElem.GetAttrAsInt("NumCnlCtrl", 0)
+                            QosLevel = (MqttQos)topicElem.GetAttrAsInt("QosLevel"),
+                            CmdType = topicElem.GetAttrAsEnum<CmdType>("CmdType"),
+                            IDUser = topicElem.GetAttrAsInt("IDUser"),
+                            NumCnlCtrl = topicElem.GetAttrAsInt("NumCnlCtrl"),
+                            KPNum = topicElem.GetAttrAsInt("KPNum")
                         });
                     }
                 }
@@ -176,6 +176,14 @@ namespace Scada.Comm.Devices.Mqtt.Config
                 errMsg = CommPhrases.LoadKpSettingsError + ": " + ex.Message;
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Gets the configuration file name.
+        /// </summary>
+        public static string GetFileName(string configDir, int kpNum)
+        {
+            return Path.Combine(configDir, "KpMqtt_" + CommUtils.AddZeros(kpNum, 3) + ".xml");
         }
     }
 }

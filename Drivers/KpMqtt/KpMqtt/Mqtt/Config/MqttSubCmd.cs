@@ -5,11 +5,11 @@ namespace Scada.Comm.Devices.Mqtt.Config
     /// <summary>
     /// Represents a command that is sent to Server when new topic data is received.
     /// </summary>
-    internal class MqttSubCmd : Command
+    internal class MqttSubCmd : MqttTopic
     {
-        public string TopicName { get; set; }
+        public CmdType CmdType { get; set; }
         public int IDUser { get; set; }
-        public string CmdType { get; set; }
         public int NumCnlCtrl { get; set; }
+        public int KPNum { get; set; }
     }
 }

@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="KpMqttLogic.cs" />
     <Compile Include="KpMqttView.cs" />
+    <Compile Include="Mqtt\Config\CmdType.cs" />
     <Compile Include="Mqtt\Config\DeviceConfig.cs" />
     <Compile Include="Mqtt\Config\MqttPubCmd.cs" />
     <Compile Include="Mqtt\Config\MqttPubParam.cs" />

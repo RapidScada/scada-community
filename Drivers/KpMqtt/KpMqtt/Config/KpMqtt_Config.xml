@@ -7,26 +7,32 @@
     UserName="" 
     Password="" />
 
+  <!-- Subscriptions -->
   <MqttSubTopics>
     <Topic TopicName="/mesparam1" QosLevel="0" />
   </MqttSubTopics>
   
+  <!-- Topics to publish -->
+  <!-- PubBehavior = OnChange | OnAlways -->
   <MqttPubTopics>
-    <!-- PubBehavior = OnChange | OnAlways -->
     <Topic TopicName="/mesparam10" QosLevel="0" NumCnl="600" PubBehavior="OnChange" Retain="true" NDS="." Prefix ="" Suffix ="" />
   </MqttPubTopics>
-  
+
+  <!-- Commands to publish data when a telecommand is sent -->
   <MqttPubCmds>
     <Topic TopicName="/mesparam100" QosLevel="0" NumCmd="1"/>
-    <Topic TopicName="/mesparam1000" QosLevel="0" NumCmd="2"/>
   </MqttPubCmds>
-  
+
+  <!-- Commands sent to Server when new data is received -->
+  <!-- CmdType = St | BinTxt | BinHex | Req -->
   <MqttSubCmds>
-    <Topic TopicName="/mesparam10000" QosLevel="0" NumCmd="10" CmdType="St" KPNum="60" IDUser="0" NumCnlCtrl="500" />
-    <Topic TopicName="/mesparam100000" QosLevel="0" NumCmd="10" CmdType="BinHex" KpNum="60" IDUser="0" NumCnlCtrl="501" />
+    <Topic TopicName="/mesparam1000" QosLevel="0" CmdType="St" IDUser="0" NumCnlCtrl="500" />
+    <Topic TopicName="/mesparam1001" QosLevel="0" CmdType="BinHex" IDUser="0" NumCnlCtrl="501" />
+    <Topic TopicName="/mesparam1002" QosLevel="0" CmdType="Req" IDUser="0" NumCnlCtrl="502" KPNum="60" />
   </MqttSubCmds>
-  
+
+  <!-- Subscriptions processed by JavaScript -->
   <MqttSubJSs>
-    <Topic TopicName="/mesparam11" QosLevel="0" CnlCnt="1" JSHandlerPath="/SCADA/ScadaComm/Config/job.js" />
+    <Topic TopicName="/mesparam11" QosLevel="0" CnlCnt="1" JSHandlerPath="C:\SCADA\ScadaComm\Config\job.js" />
   </MqttSubJSs>
 </DevTemplate>
