@@ -67,23 +67,19 @@ namespace Scada.Comm.Devices
                 }
             }
 
-            if (deviceConfig.SubJSs.Count > 0)
+            foreach (MqttSubJS subJS in deviceConfig.SubJSs)
             {
-                TagGroup tagGroup = new TagGroup("JS Subscriptions");
+                TagGroup tagGroup = new TagGroup(subJS.TopicName);
                 tagGroups.Add(tagGroup);
+                subJS.TagIndex = signal - 1;
 
-                foreach (MqttSubJS subJS in deviceConfig.SubJSs)
+                for (int i = 0, cnt = subJS.CnlCnt; i < cnt; i++)
                 {
-                    subJS.TagIndex = signal - 1;
-
-                    for (int i = 0, cnt = subJS.CnlCnt; i < cnt; i++)
+                    tagGroup.KPTags.Add(new KPTag
                     {
-                        tagGroup.KPTags.Add(new KPTag
-                        {
-                            Signal = signal++,
-                            Name = subJS.TopicName + " [" + i + "]"
-                        }); ;
-                    }
+                        Signal = signal++,
+                        Name = subJS.TopicName + " [" + i + "]"
+                    }); ;
                 }
             }
 
