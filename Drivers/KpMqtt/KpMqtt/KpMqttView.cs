@@ -9,7 +9,7 @@ namespace Scada.Comm.Devices
 {
     public class KpMqttView : KPView
     {
-        internal const string KpVersion = "5.0.2.0";
+        internal const string KpVersion = "5.0.4.0";
 
 
         public KpMqttView() : 
