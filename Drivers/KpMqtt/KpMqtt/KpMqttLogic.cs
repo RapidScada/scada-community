@@ -551,7 +551,7 @@ namespace Scada.Comm.Devices
         {
             try
             {
-                if (mqttTransport.IsClosed)
+                if (mqttTransport == null || mqttTransport.IsClosed)
                     Connect();
 
                 errMsg = "";
