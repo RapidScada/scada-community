@@ -96,6 +96,8 @@ namespace WebApiClientSample
             WriteResponse(response, out _);
             request.Dispose();
             response.Dispose();
+
+            handler.Dispose();
             httpClient.Dispose();
         }
     }
