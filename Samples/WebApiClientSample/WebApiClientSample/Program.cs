@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Scada;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -10,11 +11,7 @@ namespace WebApiClientSample
     /// </summary>
     internal class Program
     {
-        private class LoginResult
-        {
-            public bool Ok { get; set; }
-            public string? Msg { get; set; }
-        }
+        private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
         private static string ReadContentAsString(HttpContent httpContent)
         {
@@ -42,7 +39,7 @@ namespace WebApiClientSample
 
             // login
             Console.WriteLine("Login");
-            Uri loginUri = new(RootPath + "Api/Main/Login");
+            Uri loginUri = new(RootPath + "Api/Auth/Login");
             HttpRequestMessage loginRequest = new(HttpMethod.Post, loginUri)
             {
                 Content = JsonContent.Create(new 
@@ -61,7 +58,8 @@ namespace WebApiClientSample
             {
                 Console.WriteLine("No response");
             }
-            else if (JsonSerializer.Deserialize<LoginResult>(loginResponseString) is LoginResult loginResult)
+            else if (JsonSerializer.Deserialize<SimpleResult>(loginResponseString, JsonOptions) is 
+                SimpleResult loginResult)
             {
                 Console.WriteLine("Ok = " + loginResult.Ok);
                 Console.WriteLine("Msg = " + loginResult.Msg);
@@ -96,6 +94,16 @@ namespace WebApiClientSample
             WriteResponse(response, out _);
             request.Dispose();
             response.Dispose();
+
+            // logout
+            Console.WriteLine();
+            Console.WriteLine("Logout");
+            Uri logoutUri = new(RootPath + "Api/Auth/Logout");
+            HttpRequestMessage logoutRequest = new(HttpMethod.Post, logoutUri);
+            HttpResponseMessage logoutResponse = httpClient.Send(logoutRequest);
+            WriteResponse(logoutResponse, out _);
+            logoutRequest.Dispose();
+            logoutResponse.Dispose();
 
             handler.Dispose();
             httpClient.Dispose();
