@@ -11,7 +11,7 @@ namespace ScriptPlayground
         public ScriptTester() 
             : base()
         {
-            calcContext = new PlaygroundCalcContext();
+            calcContext = new CalcContext();
         }
     }
 }

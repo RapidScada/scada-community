@@ -1,4 +1,5 @@
-﻿using ScriptPlayground;
+﻿using Scada.Data.Models;
+using ScriptPlayground;
 
 namespace CustomScripts
 {
@@ -26,7 +27,10 @@ namespace CustomScripts
             {
                 foreach (int cnlNum in cnlNums)
                 {
-                    sum += Val(cnlNum);
+                    CnlData cnlData = Data(cnlNum);
+
+                    if (cnlData.IsDefined)
+                        sum += cnlData.Val;
                 }
             }
 

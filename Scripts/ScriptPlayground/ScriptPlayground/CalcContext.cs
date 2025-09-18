@@ -5,9 +5,9 @@ namespace ScriptPlayground
 {
     /// <summary>
     /// Simulates access to channel data.
-    /// <para>Имитирует доступ к данным канала.</para>
+    /// <para>Имитирует доступ к данным каналов.</para>
     /// </summary>
-    public class PlaygroundCalcContext : ICalcContext
+    public class CalcContext : ICalcContext
     {
         private readonly Dictionary<int, CnlData> cnlDataDict = [];
 
