@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ScriptPlayground\ScriptPlayground.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ScadaCommon">
+      <HintPath>..\..\..\..\scada-v6\ScadaCommon\ScadaCommon\bin\Release\netstandard2.0\ScadaCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="ScadaServerEngine">
+      <HintPath>..\..\..\..\scada-v6\ScadaServer\ScadaServer\ScadaServerEngine\bin\Release\netstandard2.0\ScadaServerEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
