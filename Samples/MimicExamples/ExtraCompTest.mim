@@ -1,0 +1,725 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mimic editorVersion="6.0.0.0">
+  <Dependencies>
+    <Faceplate typeName="SunComponent" path="Mimics\SunComponent.fp" />
+  </Dependencies>
+  <Document />
+  <Components>
+    <ExtraLevel>
+      <ID>1</ID>
+      <BackColor>White</BackColor>
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>2</Width>
+        <Color>Gray</Color>
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>SendCommand</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor>SkyBlue</ForeColor>
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <InCnlNum>105</InCnlNum>
+      <Location>
+        <X>50</X>
+        <Y>40</Y>
+      </Location>
+      <Maximum>100</Maximum>
+      <Minimum>0</Minimum>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>105</OutCnlNum>
+      <Padding>
+        <Top>2</Top>
+        <Right>2</Right>
+        <Bottom>2</Bottom>
+        <Left>2</Left>
+      </Padding>
+      <PropertyBindings isArray="true" />
+      <Script />
+      <Size>
+        <Width>20</Width>
+        <Height>100</Height>
+      </Size>
+      <Tooltip />
+      <Value>25</Value>
+      <Visible>True</Visible>
+    </ExtraLevel>
+    <ExtraTrend>
+      <ID>2</ID>
+      <BackColor>White</BackColor>
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>1</Width>
+        <Color>Gray</Color>
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor>Red</ForeColor>
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <InCnlNum>105</InCnlNum>
+      <Location>
+        <X>200</X>
+        <Y>70</Y>
+      </Location>
+      <Maximum>0</Maximum>
+      <Minimum>0</Minimum>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>0</OutCnlNum>
+      <Period>1</Period>
+      <PropertyBindings isArray="true" />
+      <Script />
+      <Size>
+        <Width>100</Width>
+        <Height>30</Height>
+      </Size>
+      <Tooltip />
+      <Visible>True</Visible>
+    </ExtraTrend>
+    <ExtraGauge>
+      <ID>3</ID>
+      <BackColor />
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>0</Width>
+        <Color />
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>SendCommand</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>False</Inherit>
+        <Name />
+        <Size>8</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor>White</ForeColor>
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <ImageName />
+      <ImageStretch>Zoom</ImageStretch>
+      <InCnlNum>105</InCnlNum>
+      <Location>
+        <X>400</X>
+        <Y>40</Y>
+      </Location>
+      <MaxAngle>150</MaxAngle>
+      <Maximum>100</Maximum>
+      <MinAngle>-150</MinAngle>
+      <Minimum>0</Minimum>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>105</OutCnlNum>
+      <PivotLocation>
+        <X>50</X>
+        <Y>50</Y>
+      </PivotLocation>
+      <Pointer>
+        <CapLocation>
+          <X>5</X>
+          <Y>45</Y>
+        </CapLocation>
+        <ImageName />
+        <ImageStretch>Zoom</ImageStretch>
+        <Size>
+          <Width>10</Width>
+          <Height>50</Height>
+        </Size>
+      </Pointer>
+      <PropertyBindings isArray="true" />
+      <Scale>
+        <DecimalPlaces>0</DecimalPlaces>
+        <LabelRadius>32</LabelRadius>
+        <RotateLabels>False</RotateLabels>
+        <ShowLabels>True</ShowLabels>
+        <ShowTicks>True</ShowTicks>
+        <Step>10</Step>
+        <TickRadius>44</TickRadius>
+        <TickSize>
+          <Width>2</Width>
+          <Height>5</Height>
+        </TickSize>
+      </Scale>
+      <Script />
+      <Size>
+        <Width>100</Width>
+        <Height>100</Height>
+      </Size>
+      <Tooltip />
+      <Value>0</Value>
+      <Visible>True</Visible>
+    </ExtraGauge>
+    <ExtraFrame>
+      <ID>4</ID>
+      <BackColor>White</BackColor>
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>1</Width>
+        <Color>Gray</Color>
+      </Border>
+      <ChartCnlNums>101-103</ChartCnlNums>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor />
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>50</X>
+        <Y>180</Y>
+      </Location>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>0</OutCnlNum>
+      <PropertyBindings isArray="true" />
+      <QueryString>title=My Chart&amp;profile=PlgChartPro_Profile2.xml</QueryString>
+      <Script />
+      <SearchParams />
+      <Size>
+        <Width>700</Width>
+        <Height>220</Height>
+      </Size>
+      <SourceType>Chart</SourceType>
+      <Tooltip />
+      <Url>../../Main/Events</Url>
+      <ViewID>2</ViewID>
+      <Visible>True</Visible>
+    </ExtraFrame>
+    <ExtraMarkup>
+      <ID>5</ID>
+      <AutoSize>True</AutoSize>
+      <BackColor />
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>0</Width>
+        <Color />
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor />
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <InCnlNum>105</InCnlNum>
+      <Location>
+        <X>50</X>
+        <Y>440</Y>
+      </Location>
+      <Markup>&lt;div class="dropdown"&gt;
+  &lt;button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"&gt;
+    Markup Demo
+  &lt;/button&gt;
+  &lt;ul class="dropdown-menu"&gt;
+    &lt;li&gt;&lt;a class="dropdown-item markup-item1" href="#"&gt;Show Chart&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class="dropdown-item markup-item2" href="#"&gt;Send Command&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</Markup>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>105</OutCnlNum>
+      <PropertyBindings isArray="true" />
+      <Script>class extends ComponentScript {
+    domCreated(args) {
+      args.component.dom.find(".markup-item1").on("click", () =&gt; {
+        args.renderContext.viewHub.features.chart.show(args.component.properties.inCnlNum);
+      });
+
+      args.component.dom.find(".markup-item2").on("click", () =&gt; {
+        args.renderContext.viewHub.features.command.show(args.component.properties.outCnlNum);
+      });
+    }
+
+    domUpdated(args) {
+    }
+
+    dataUpdated(args) {
+    }
+}
+</Script>
+      <Size>
+        <Width>100</Width>
+        <Height>100</Height>
+      </Size>
+      <Tooltip />
+      <Visible>True</Visible>
+    </ExtraMarkup>
+    <ExtraMarkup>
+      <ID>6</ID>
+      <AutoSize>False</AutoSize>
+      <BackColor />
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>0</Width>
+        <Color />
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>SendCommand</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>False</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor />
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <InCnlNum>104</InCnlNum>
+      <Location>
+        <X>300</X>
+        <Y>440</Y>
+      </Location>
+      <Markup>&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"&gt;
+	&lt;path fill="silver" d="M232 488c0 13.3 10.7 24 24 24s24-10.7 24-24l0-56c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 56zm0-408c0 13.3 10.7 24 24 24s24-10.7 24-24l0-56c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 56zM75 75c-9.4 9.4-9.4 24.6 0 33.9l39.6 39.6c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9L108.9 75c-9.4-9.4-24.6-9.4-33.9 0zM363.5 363.5c-9.4 9.4-9.4 24.6 0 33.9L403.1 437c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-39.6-39.6c-9.4-9.4-24.6-9.4-33.9 0zM0 256c0 13.3 10.7 24 24 24l56 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-56 0c-13.3 0-24 10.7-24 24zm408 0c0 13.3 10.7 24 24 24l56 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-56 0c-13.3 0-24 10.7-24 24zM75 437c9.4 9.4 24.6 9.4 33.9 0l39.6-39.6c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0L75 403.1c-9.4 9.4-9.4 24.6 0 33.9zM363.5 148.5c9.4 9.4 24.6 9.4 33.9 0L437 108.9c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-39.6 39.6c-9.4 9.4-9.4 24.6 0 33.9zM256 368a112 112 0 1 0 0-224 112 112 0 1 0 0 224z"/&gt;
+&lt;/svg&gt;</Markup>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>104</OutCnlNum>
+      <PropertyBindings isArray="true" />
+      <Script>class extends ComponentScript {
+    domCreated(args) {
+      args.component.customData ??= {};
+      args.component.customData.shining = false;
+    }
+
+    domUpdated(args) {
+    }
+
+    dataUpdated(args) {
+      const props = args.component.properties;
+      const customData = args.component.customData;
+      const cnlData = args.dataProvider.getCurData(props.inCnlNum);
+      const shining = cnlData.d.stat &gt; 0 &amp;&amp; cnlData.d.val &gt; 0;
+      
+      if (customData.shining !== shining) {
+        customData.shining = shining;
+        args.component.dom.find("svg path").attr("fill", shining ? "gold" : "silver");
+      }
+    }
+    
+    getCommandValue(args) {
+      const customData = args.component.customData;
+      return customData.shining ? 0 : 1;
+    }
+}
+</Script>
+      <Size>
+        <Width>100</Width>
+        <Height>100</Height>
+      </Size>
+      <Tooltip />
+      <Visible>True</Visible>
+    </ExtraMarkup>
+    <SunComponent>
+      <ID>8</ID>
+      <Blinking>False</Blinking>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>SendCommand</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>False</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <DeviceNum>0</DeviceNum>
+      <Enabled>True</Enabled>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>500</X>
+        <Y>440</Y>
+      </Location>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>104</OutCnlNum>
+      <PropertyBindings isArray="true">
+        <Item>
+          <PropertyName>shining</PropertyName>
+          <DataSource>104</DataSource>
+          <DataMember>Value</DataMember>
+          <Format />
+        </Item>
+      </PropertyBindings>
+      <Shining>0</Shining>
+      <Size>
+        <Width>100</Width>
+        <Height>120</Height>
+      </Size>
+      <Visible>True</Visible>
+    </SunComponent>
+  </Components>
+  <Images />
+</Mimic>
