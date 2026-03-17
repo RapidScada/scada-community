@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Mimic editorVersion="6.0.0.0">
+<Mimic editorVersion="6.0.1.0">
   <Dependencies>
+    <Faceplate typeName="Damper" path="Mimics\Damper.fp" />
     <Faceplate typeName="SunComponent" path="Mimics\SunComponent.fp" />
   </Dependencies>
   <Document />
@@ -618,7 +619,7 @@
       </HoverState>
       <InCnlNum>104</InCnlNum>
       <Location>
-        <X>300</X>
+        <X>250</X>
         <Y>440</Y>
       </Location>
       <Markup>&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"&gt;
@@ -699,7 +700,7 @@
       <Enabled>True</Enabled>
       <InCnlNum>0</InCnlNum>
       <Location>
-        <X>500</X>
+        <X>400</X>
         <Y>440</Y>
       </Location>
       <Name />
@@ -720,6 +721,167 @@
       </Size>
       <Visible>True</Visible>
     </SunComponent>
+    <Damper>
+      <ID>9</ID>
+      <Blinking>False</Blinking>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <DeviceNum>0</DeviceNum>
+      <Enabled>True</Enabled>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>540</X>
+        <Y>420</Y>
+      </Location>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>105</OutCnlNum>
+      <PropertyBindings isArray="true">
+        <Item>
+          <PropertyName>rotation</PropertyName>
+          <DataSource>105</DataSource>
+          <DataMember>Value</DataMember>
+          <Format />
+        </Item>
+        <Item>
+          <PropertyName>enabled</PropertyName>
+          <DataSource>105</DataSource>
+          <DataMember>Status</DataMember>
+          <Format />
+        </Item>
+      </PropertyBindings>
+      <Rotation />
+      <Size>
+        <Width>220</Width>
+        <Height>140</Height>
+      </Size>
+      <Visible>True</Visible>
+    </Damper>
+    <BasicButton>
+      <ID>10</ID>
+      <BackColor />
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>0</Width>
+        <Color />
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>SendCommand</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor />
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <ImageName />
+      <ImageSize>
+        <Width>16</Width>
+        <Height>16</Height>
+      </ImageSize>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>600</X>
+        <Y>540</Y>
+      </Location>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>105</OutCnlNum>
+      <PropertyBindings isArray="true" />
+      <Script />
+      <Size>
+        <Width>100</Width>
+        <Height>30</Height>
+      </Size>
+      <Text>Set Angle</Text>
+      <Tooltip />
+      <Visible>True</Visible>
+    </BasicButton>
   </Components>
   <Images />
 </Mimic>
