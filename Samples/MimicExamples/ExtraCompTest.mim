@@ -755,7 +755,7 @@
         <Script />
       </ClickAction>
       <DeviceNum>0</DeviceNum>
-      <Enabled>True</Enabled>
+      <Enabled>False</Enabled>
       <InCnlNum>0</InCnlNum>
       <Location>
         <X>540</X>
@@ -778,7 +778,7 @@
           <Format />
         </Item>
       </PropertyBindings>
-      <Rotation />
+      <Rotation>0</Rotation>
       <Size>
         <Width>220</Width>
         <Height>140</Height>
