@@ -42,16 +42,16 @@
       <Height>140</Height>
     </Size>
     <Stylesheet>.damper-markup {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/*.damper-markup {
   width: unset !important;
   height: unset !important;
   right: 0;
   bottom: 0;
-}
-
-.damper-markup svg {
-  width: 100%;
-  height: 100%;
-}
+}*/
 </Stylesheet>
   </Document>
   <Components>
@@ -135,7 +135,7 @@
         <X>0</X>
         <Y>0</Y>
       </Location>
-      <Markup>&lt;svg width="220" height="140"
+      <Markup>&lt;svg width="100%" height="100%"
      viewBox="0 0 220 140"
      xmlns="http://www.w3.org/2000/svg"&gt;
 
