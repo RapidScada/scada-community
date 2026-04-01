@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Mimic editorVersion="6.0.1.0">
+<Mimic editorVersion="6.0.2.0">
   <Dependencies>
     <Faceplate typeName="MyFaceplate" path="Mimics\MyFaceplate.fp" />
     <Faceplate typeName="PanelFaceplate" path="Mimics\PanelFaceplate.fp" />
@@ -90,6 +90,7 @@
 }
 </Script>
       </ClickAction>
+      <Conditions isArray="true" />
       <CornerRadius>
         <TopLeft>5</TopLeft>
         <TopRight>5</TopRight>
@@ -97,6 +98,7 @@
         <BottomLeft>5</BottomLeft>
       </CornerRadius>
       <CssClass>my-class</CssClass>
+      <DefaultText />
       <DeviceNum>0</DeviceNum>
       <DisabledState>
         <BackColor />
@@ -332,6 +334,24 @@
         </LinkArgs>
         <Script />
       </ClickAction>
+      <Conditions isArray="true">
+        <Item>
+          <ComparisonOper1>GreaterThanEqual</ComparisonOper1>
+          <ComparisonArg1>0</ComparisonArg1>
+          <LogicalOper>And</LogicalOper>
+          <ComparisonOper2>LessThan</ComparisonOper2>
+          <ComparisonArg2>5</ComparisonArg2>
+          <Text>Small</Text>
+        </Item>
+        <Item>
+          <ComparisonOper1>GreaterThanEqual</ComparisonOper1>
+          <ComparisonArg1>5</ComparisonArg1>
+          <LogicalOper>And</LogicalOper>
+          <ComparisonOper2>LessThan</ComparisonOper2>
+          <ComparisonArg2>10</ComparisonArg2>
+          <Text>Big</Text>
+        </Item>
+      </Conditions>
       <CornerRadius>
         <TopLeft>50</TopLeft>
         <TopRight>50</TopRight>
@@ -339,6 +359,7 @@
         <BottomLeft>0</BottomLeft>
       </CornerRadius>
       <CssClass />
+      <DefaultText>No Data</DefaultText>
       <DeviceNum>0</DeviceNum>
       <DisabledState>
         <BackColor />
@@ -362,7 +383,7 @@
         <BorderColor />
         <Underline>False</Underline>
       </HoverState>
-      <InCnlNum>0</InCnlNum>
+      <InCnlNum>105</InCnlNum>
       <Location>
         <X>310</X>
         <Y>100</Y>
@@ -431,25 +452,35 @@
         <X>100</X>
         <Y>250</Y>
       </Location>
-      <MyBackColor>Red</MyBackColor>
+      <MyBackColor />
       <Name />
       <PropertyBindings isArray="true">
         <Item>
           <PropertyName>faceValue</PropertyName>
           <DataSource>104</DataSource>
-          <DataMember>DisplayValue</DataMember>
-          <Format />
+          <DataMember>Value</DataMember>
+          <Expression>isNaN(x) ? "None" : x * 2</Expression>
+          <Format>&lt;{0}&gt;</Format>
         </Item>
         <Item>
           <PropertyName>faceColor</PropertyName>
           <DataSource>104</DataSource>
           <DataMember>Color0</DataMember>
+          <Expression />
+          <Format />
+        </Item>
+        <Item>
+          <PropertyName>borderColor</PropertyName>
+          <DataSource>104</DataSource>
+          <DataMember>Color0</DataMember>
+          <Expression />
           <Format />
         </Item>
         <Item>
           <PropertyName>enabled</PropertyName>
           <DataSource>104</DataSource>
           <DataMember>Value</DataMember>
+          <Expression />
           <Format />
         </Item>
       </PropertyBindings>

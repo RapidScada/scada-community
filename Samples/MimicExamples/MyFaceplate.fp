@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Faceplate editorVersion="6.0.1.0">
+<Faceplate editorVersion="6.0.2.0">
   <Dependencies />
   <Document>
     <BackColor>White</BackColor>
@@ -26,6 +26,7 @@
       <BottomRight>10</BottomRight>
       <BottomLeft>10</BottomLeft>
     </CornerRadius>
+    <CssClass />
     <DisabledState>
       <BackColor>Silver</BackColor>
       <ForeColor />
@@ -43,11 +44,49 @@
         <Name>faceValue</Name>
         <Path>txtValue.text</Path>
         <DefaultValue />
+        <DefaultBinding>
+          <PropertyName>faceValue</PropertyName>
+          <DataSource>.DO</DataSource>
+          <DataMember>Value</DataMember>
+          <Expression />
+          <Format />
+        </DefaultBinding>
       </Item>
       <Item>
         <Name>faceColor</Name>
         <Path>txtValue.foreColor</Path>
         <DefaultValue />
+        <DefaultBinding>
+          <PropertyName>faceColor</PropertyName>
+          <DataSource />
+          <DataMember>Value</DataMember>
+          <Expression />
+          <Format />
+        </DefaultBinding>
+      </Item>
+      <Item>
+        <Name>borderColor</Name>
+        <Path>mimic.border.color</Path>
+        <DefaultValue />
+        <DefaultBinding>
+          <PropertyName>borderColor</PropertyName>
+          <DataSource />
+          <DataMember>Value</DataMember>
+          <Expression />
+          <Format />
+        </DefaultBinding>
+      </Item>
+      <Item>
+        <Name>myBackColor</Name>
+        <Path>mimic.backColor</Path>
+        <DefaultValue />
+        <DefaultBinding>
+          <PropertyName>myBackColor</PropertyName>
+          <DataSource />
+          <DataMember>Value</DataMember>
+          <Expression />
+          <Format />
+        </DefaultBinding>
       </Item>
     </PropertyExports>
     <Script>class extends ComponentScript {
