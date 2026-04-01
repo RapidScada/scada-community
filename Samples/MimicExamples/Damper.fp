@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Faceplate editorVersion="6.0.1.0">
+<Faceplate editorVersion="6.0.2.0">
   <Dependencies />
   <Document>
     <PropertyExports isArray="true">
@@ -11,6 +11,10 @@
     </PropertyExports>
     <Script>class extends ComponentScript {
     _showRotation(args) {
+      if (!args.component) {
+        return; // faceplate editing
+      }
+    
       const idPrefix = args.component.dom.attr("id") + "-1-";
       const rotation = Number.parseInt(args.component.properties.rotation) || 0;
       const enabled = args.component.properties.enabled;
@@ -37,6 +41,18 @@
       <Width>220</Width>
       <Height>140</Height>
     </Size>
+    <Stylesheet>.damper-markup {
+  width: unset !important;
+  height: unset !important;
+  right: 0;
+  bottom: 0;
+}
+
+.damper-markup svg {
+  width: 100%;
+  height: 100%;
+}
+</Stylesheet>
   </Document>
   <Components>
     <ExtraMarkup>
@@ -90,7 +106,7 @@
         <BottomRight>0</BottomRight>
         <BottomLeft>0</BottomLeft>
       </CornerRadius>
-      <CssClass />
+      <CssClass>damper-markup</CssClass>
       <DeviceNum>0</DeviceNum>
       <DisabledState>
         <BackColor />
