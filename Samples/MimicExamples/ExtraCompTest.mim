@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Mimic editorVersion="6.0.1.0">
+<Mimic editorVersion="6.0.2.0">
   <Dependencies>
+    <Faceplate typeName="CommandBox" path="Mimics\CommandBox.fp" />
     <Faceplate typeName="Damper" path="Mimics\Damper.fp" />
     <Faceplate typeName="SunComponent" path="Mimics\SunComponent.fp" />
   </Dependencies>
@@ -182,7 +183,7 @@
       </HoverState>
       <InCnlNum>105</InCnlNum>
       <Location>
-        <X>200</X>
+        <X>160</X>
         <Y>70</Y>
       </Location>
       <Maximum>0</Maximum>
@@ -278,7 +279,7 @@
       <ImageStretch>Zoom</ImageStretch>
       <InCnlNum>105</InCnlNum>
       <Location>
-        <X>400</X>
+        <X>330</X>
         <Y>40</Y>
       </Location>
       <MaxAngle>150</MaxAngle>
@@ -882,6 +883,56 @@
       <Tooltip />
       <Visible>True</Visible>
     </BasicButton>
+    <CommandBox>
+      <ID>11</ID>
+      <Blinking>False</Blinking>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <DeviceNum>0</DeviceNum>
+      <Enabled>True</Enabled>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>500</X>
+        <Y>50</Y>
+      </Location>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>105</OutCnlNum>
+      <PropertyBindings isArray="true" />
+      <Size>
+        <Width>250</Width>
+        <Height>80</Height>
+      </Size>
+      <Visible>True</Visible>
+    </CommandBox>
   </Components>
   <Images />
 </Mimic>

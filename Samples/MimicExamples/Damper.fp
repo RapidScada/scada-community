@@ -11,10 +11,6 @@
     </PropertyExports>
     <Script>class extends ComponentScript {
     _showRotation(args) {
-      if (!args.component) {
-        return; // faceplate editing
-      }
-    
       const idPrefix = args.component.dom.attr("id") + "-1-";
       const rotation = Number.parseInt(args.component.properties.rotation) || 0;
       const enabled = args.component.properties.enabled;
@@ -41,12 +37,12 @@
       <Width>220</Width>
       <Height>140</Height>
     </Size>
-    <Stylesheet>.damper-markup {
+    <Stylesheet>.fp-damper-markup {
   width: 100% !important;
   height: 100% !important;
 }
 
-/*.damper-markup {
+/*.fp-damper-markup {
   width: unset !important;
   height: unset !important;
   right: 0;
@@ -106,7 +102,7 @@
         <BottomRight>0</BottomRight>
         <BottomLeft>0</BottomLeft>
       </CornerRadius>
-      <CssClass>damper-markup</CssClass>
+      <CssClass>fp-damper-markup</CssClass>
       <DeviceNum>0</DeviceNum>
       <DisabledState>
         <BackColor />
