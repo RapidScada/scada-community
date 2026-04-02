@@ -48,7 +48,7 @@
         <Script>function (args) {
   console.log("Show/hide panel");
   const PANEL_ID = 2;
-  const mimic = args.component.parent; // !!!
+  const mimic = args.component.parent;
   const button = args.component;
   const panel = mimic.componentMap.get(PANEL_ID);
   const isVisible = !panel.properties.visible;      
