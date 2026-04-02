@@ -631,30 +631,30 @@
       <OutCnlNum>104</OutCnlNum>
       <PropertyBindings isArray="true" />
       <Script>class extends ComponentScript {
-    domCreated(args) {
-      args.component.customData ??= {};
-      args.component.customData.shining = false;
-    }
+  domCreated(args) {
+    args.component.customData = {};
+    args.component.customData.shining = false;
+  }
 
-    domUpdated(args) {
-    }
+  domUpdated(args) {
+  }
 
-    dataUpdated(args) {
-      const props = args.component.properties;
-      const customData = args.component.customData;
-      const cnlData = args.dataProvider.getCurData(props.inCnlNum);
-      const shining = cnlData.d.stat &gt; 0 &amp;&amp; cnlData.d.val &gt; 0;
-      
-      if (customData.shining !== shining) {
-        customData.shining = shining;
-        args.component.dom.find("svg path").attr("fill", shining ? "gold" : "silver");
-      }
+  dataUpdated(args) {
+    const props = args.component.properties;
+    const customData = args.component.customData;
+    const cnlData = args.dataProvider.getCurData(props.inCnlNum);
+    const shining = cnlData.d.stat &gt; 0 &amp;&amp; cnlData.d.val &gt; 0;
+
+    if (customData.shining !== shining) {
+      customData.shining = shining;
+      args.component.dom.find("svg path").attr("fill", shining ? "gold" : "silver");
     }
+  }
     
-    getCommandValue(args) {
-      const customData = args.component.customData;
-      return customData.shining ? 0 : 1;
-    }
+  getCommandValue(args) {
+    const customData = args.component.customData;
+    return customData.shining ? 0 : 1;
+  }
 }
 </Script>
       <Size>

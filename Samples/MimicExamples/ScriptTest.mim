@@ -51,16 +51,13 @@
   const mimic = args.component.parent; // !!!
   const button = args.component;
   const panel = mimic.componentMap.get(PANEL_ID);
-  const isVisible = !panel.properties.visible;  
-  const setRequireUpdate = (target) =&gt; {
-    target.customData ??= {};
-    target.customData.requireUpdate = true;
-  };
-    
+  const isVisible = !panel.properties.visible;      
+  
   panel.properties.visible = isVisible;
+  panel.customData.requireUpdate = true;
+
   button.properties.text = isVisible ? "Hide Panel" : "Show Panel";
-  setRequireUpdate(panel);
-  setRequireUpdate(button);
+  button.customData.requireUpdate = true;
 }
 </Script>
       </ClickAction>
@@ -109,11 +106,15 @@
       <OutCnlNum>0</OutCnlNum>
       <PropertyBindings isArray="true" />
       <Script>class extends ComponentScript {
+  domCreated(args) {
+    args.component.customData = {
+      requireUpdate: false
+    };
+  }
+  
   dataUpdated(args) {
-    const customData = args.component.customData;
-
-    if (customData &amp;&amp; customData.requireUpdate) {
-      customData.requireUpdate = false;
+    if (args.component.customData.requireUpdate) {
+      args.component.customData.requireUpdate = false;
       args.propertyChanged = true;
     }
   }
@@ -211,11 +212,15 @@
       <OutCnlNum>0</OutCnlNum>
       <PropertyBindings isArray="true" />
       <Script>class extends ComponentScript {
+  domCreated(args) {
+    args.component.customData = {
+      requireUpdate: false
+    };
+  }
+  
   dataUpdated(args) {
-    const customData = args.component.customData;
-
-    if (customData &amp;&amp; customData.requireUpdate) {
-      customData.requireUpdate = false;
+    if (args.component.customData.requireUpdate) {
+      args.component.customData.requireUpdate = false;
       args.propertyChanged = true;
     }
   }
