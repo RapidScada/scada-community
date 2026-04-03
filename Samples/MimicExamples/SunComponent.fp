@@ -11,32 +11,32 @@
       </Item>
     </PropertyExports>
     <Script>class extends ComponentScript {
-    _getShining(args) {
-      return Number.parseInt(args.component.properties.shining) &gt; 0;
-    }
+  _getShining(args) {
+    return Number.parseInt(args.component.properties.shining) &gt; 0;
+  }
+
+  _showShining(args) {
+    args.component.dom.find("svg path")
+      .attr("fill", this._getShining(args) ? "cyan" : "lightcyan");
+  }
+
+  domCreated(args) {
+    console.log("SunComponent, domCreated");
+    this._showShining(args);
+  }
+
+  domUpdated(args) {
+    console.log("SunComponent, domUpdated");
+    this._showShining(args);
+  }
+
+  dataUpdated(args) {
+  }
     
-    _showShining(args) {
-      args.component.dom.find("svg path")
-        .attr("fill", this._getShining(args) ? "cyan" : "lightcyan");
-    }
-
-    domCreated(args) {
-      console.log("SunComponent, domCreated");
-      this._showShining(args);
-    }
-
-    domUpdated(args) {
-      console.log("SunComponent, domUpdated");
-      this._showShining(args);
-    }
-
-    dataUpdated(args) {
-    }
-    
-    getCommandValue(args) {
-      console.log("SunComponent, getCommandValue");
-      return this._getShining(args) ? 0 : 1;
-    }
+  getCommandValue(args) {
+    console.log("SunComponent, getCommandValue");
+    return this._getShining(args) ? 0 : 1;
+  }
 }
 </Script>
     <Size>

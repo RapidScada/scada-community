@@ -41,13 +41,6 @@
   width: 100% !important;
   height: 100% !important;
 }
-
-/*.fp-damper-markup {
-  width: unset !important;
-  height: unset !important;
-  right: 0;
-  bottom: 0;
-}*/
 </Stylesheet>
   </Document>
   <Components>

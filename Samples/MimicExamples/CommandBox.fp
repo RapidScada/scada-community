@@ -7,10 +7,41 @@
       <Color>Silver</Color>
     </Border>
     <CssClass>fp-command-box</CssClass>
+    <Script>class extends ComponentScript {
+  domCreated(args) {
+    console.log("CommandBox, domCreated");
+    args.component.dom.on("keydown", "input", (event) =&gt; {
+      if (event.key === "Enter") {
+        args.component.dom.find("button:first").trigger("click");
+      }
+    });
+  }
+
+  domUpdated(args) {
+    console.log("CommandBox, domUpdated");
+  }
+
+  dataUpdated(args) {
+  }
+    
+  getCommandValue(args) {
+  }
+}
+</Script>
     <Size>
       <Width>250</Width>
       <Height>80</Height>
     </Size>
+    <Stylesheet>.fp-command-box-input {
+  width: unset !important;
+  right: 80px;
+}
+
+.fp-command-box-button {
+  left: unset !important;
+  right: 10px;
+}
+</Stylesheet>
   </Document>
   <Components>
     <Text>
@@ -168,7 +199,7 @@
         <BottomRight>0</BottomRight>
         <BottomLeft>0</BottomLeft>
       </CornerRadius>
-      <CssClass />
+      <CssClass>fp-command-box-input</CssClass>
       <DeviceNum>0</DeviceNum>
       <DisabledState>
         <BackColor />
@@ -256,9 +287,14 @@
         <Script>function (args) {
   const props = args.component.parent.properties; // faceplate instance properties
   const inputVal = args.component.dom.closest(".fp-command-box").find("input").val();
-  const cmdVal = Number.parseFloat(inputVal) || 0;
-  console.log(`Command ${cmdVal} to channel ${props.outCnlNum}`);
-  args.renderContext.mainApi.sendCommand(props.outCnlNum, cmdVal, false, null);
+  const cmdVal = Number.parseFloat(inputVal);
+  
+  if (Number.isFinite(cmdVal)) {
+    console.log(`Command ${cmdVal} to channel ${props.outCnlNum}`);
+    args.renderContext.mainApi.sendCommand(props.outCnlNum, cmdVal, false, null);
+  } else {
+    alert("A number is required.");
+  }
 }
 </Script>
       </ClickAction>
@@ -268,7 +304,7 @@
         <BottomRight>0</BottomRight>
         <BottomLeft>0</BottomLeft>
       </CornerRadius>
-      <CssClass />
+      <CssClass>fp-command-box-button</CssClass>
       <DeviceNum>0</DeviceNum>
       <DisabledState>
         <BackColor />
