@@ -47,17 +47,19 @@
         </LinkArgs>
         <Script>function (args) {
   console.log("Show/hide panel");
-  const PANEL_ID = 2;
   const button = args.component;
   const mimic = button.getMimic();
-  const panel = mimic.componentMap.get(PANEL_ID);
-  const isVisible = !panel.properties.visible;      
+  const panel = mimic.findComponent("pnlRelayState");
   
-  panel.properties.visible = isVisible;
-  panel.customData.requireUpdate = true;
-
-  button.properties.text = isVisible ? "Hide Panel" : "Show Panel";
-  button.customData.requireUpdate = true;
+  if (panel) {
+    const isVisible = !panel.properties.visible;      
+    panel.properties.visible = isVisible;
+    panel.customData.requireUpdate = true;
+    button.properties.text = isVisible ? "Hide Panel" : "Show Panel";
+    button.customData.requireUpdate = true;
+  } else {
+    console.warn("Panel not found");
+  }
 }
 </Script>
       </ClickAction>
@@ -101,7 +103,7 @@
         <X>50</X>
         <Y>50</Y>
       </Location>
-      <Name />
+      <Name>btnTogglePanel</Name>
       <ObjNum>0</ObjNum>
       <OutCnlNum>0</OutCnlNum>
       <PropertyBindings isArray="true" />
@@ -207,7 +209,7 @@
         <X>50</X>
         <Y>100</Y>
       </Location>
-      <Name />
+      <Name>pnlRelayState</Name>
       <ObjNum>0</ObjNum>
       <OutCnlNum>0</OutCnlNum>
       <PropertyBindings isArray="true" />
@@ -333,7 +335,7 @@
             <X>20</X>
             <Y>35</Y>
           </Location>
-          <Name />
+          <Name>ledDO</Name>
           <ObjNum>0</ObjNum>
           <OutCnlNum>0</OutCnlNum>
           <PropertyBindings isArray="true" />
@@ -427,7 +429,7 @@
             <X>60</X>
             <Y>40</Y>
           </Location>
-          <Name />
+          <Name>txtDO</Name>
           <ObjNum>0</ObjNum>
           <OutCnlNum>0</OutCnlNum>
           <Padding>
