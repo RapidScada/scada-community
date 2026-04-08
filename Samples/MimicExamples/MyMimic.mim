@@ -2,7 +2,6 @@
 <Mimic editorVersion="6.0.2.0">
   <Dependencies>
     <Faceplate typeName="MyFaceplate" path="Mimics\MyFaceplate.fp" />
-    <Faceplate typeName="PanelFaceplate" path="Mimics\PanelFaceplate.fp" />
   </Dependencies>
   <Document>
     <BackColor />
