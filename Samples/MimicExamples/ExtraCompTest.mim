@@ -756,7 +756,7 @@
         <Script />
       </ClickAction>
       <DeviceNum>0</DeviceNum>
-      <Enabled>False</Enabled>
+      <Enabled>True</Enabled>
       <InCnlNum>0</InCnlNum>
       <Location>
         <X>540</X>
