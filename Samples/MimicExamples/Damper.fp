@@ -129,11 +129,8 @@
      xmlns="http://www.w3.org/2000/svg"&gt;
 
   &lt;!-- воздуховод --&gt;
-  &lt;rect x="20" y="50" width="180" height="40"
+  &lt;rect id="{0}damper-duct" x="20" y="50" width="180" height="40"
         fill="#e0e0e0" stroke="#333" stroke-width="2"/&gt;
-
-  &lt;!-- ось --&gt;
-  &lt;circle cx="110" cy="70" r="4" fill="#333"/&gt;
 
   &lt;!-- заслонка --&gt;
   &lt;g id="{0}damper" transform="rotate(0 110 70)"&gt;
@@ -144,6 +141,9 @@
             stroke="#444"
             stroke-width="2"/&gt;
   &lt;/g&gt;
+
+  &lt;!-- ось --&gt;
+  &lt;circle id="{0}damper-pin" cx="110" cy="70" r="4" fill="#333"/&gt;
 
 &lt;/svg&gt;</Markup>
       <Name>svgDamper</Name>
