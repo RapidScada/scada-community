@@ -11,14 +11,14 @@
     </PropertyExports>
     <Script>class extends ComponentScript {
     _showRotation(args) {
-      const idPrefix = args.component.dom.attr("id") + "-1-";
+      const idPrefix = args.component.dom.attr("id") + "-1";
       const rotation = Number.parseInt(args.component.properties.rotation) || 0;
       const enabled = args.component.properties.enabled;
       const angle = enabled ? rotation : 0;
       const fillColor = enabled ? "#4a90e2" : "#9e9e9e";
       const strokeColor = enabled ? "#1c3f73" : "#444";
       args.component.dom
-        .find(`#${idPrefix}damper`).attr("transform", `rotate(${angle} 110 70)`)
+        .find(`#${idPrefix}-damper`).attr("transform", `rotate(${angle} 110 70)`)
         .find("rect").attr("fill", fillColor).attr("stroke", strokeColor);
     }
 
@@ -129,11 +129,11 @@
      xmlns="http://www.w3.org/2000/svg"&gt;
 
   &lt;!-- воздуховод --&gt;
-  &lt;rect id="{0}damper-duct" x="20" y="50" width="180" height="40"
+  &lt;rect id="{0}-damper-duct" x="20" y="50" width="180" height="40"
         fill="#e0e0e0" stroke="#333" stroke-width="2"/&gt;
 
   &lt;!-- заслонка --&gt;
-  &lt;g id="{0}damper" transform="rotate(0 110 70)"&gt;
+  &lt;g id="{0}-damper" transform="rotate(0 110 70)"&gt;
       &lt;rect x="70" y="66"
             width="80"
             height="8"
@@ -143,7 +143,7 @@
   &lt;/g&gt;
 
   &lt;!-- ось --&gt;
-  &lt;circle id="{0}damper-pin" cx="110" cy="70" r="4" fill="#333"/&gt;
+  &lt;circle id="{0}-damper-pin" cx="110" cy="70" r="4" fill="#333"/&gt;
 
 &lt;/svg&gt;</Markup>
       <Name>svgDamper</Name>
