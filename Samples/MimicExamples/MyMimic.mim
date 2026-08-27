@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Mimic editorVersion="6.0.2.0">
+<Mimic editorVersion="6.0.2.1">
   <Dependencies>
     <Faceplate typeName="MyFaceplate" path="Mimics\MyFaceplate.fp" />
   </Dependencies>
@@ -291,7 +291,7 @@
     <Text>
       <ID>14</ID>
       <AutoSize>False</AutoSize>
-      <BackColor />
+      <BackColor>LightCyan</BackColor>
       <Blinking>False</Blinking>
       <BlinkingState>
         <BackColor />
@@ -361,7 +361,7 @@
       <DefaultText>No Data</DefaultText>
       <DeviceNum>0</DeviceNum>
       <DisabledState>
-        <BackColor />
+        <BackColor>Silver</BackColor>
         <ForeColor />
         <BorderColor />
         <Underline>False</Underline>
@@ -412,6 +412,7 @@
     <MyFaceplate>
       <ID>6</ID>
       <Blinking>False</Blinking>
+      <BorderWidth>4</BorderWidth>
       <ClickAction>
         <ActionType>ExecuteScript</ActionType>
         <ChartArgs />
@@ -487,6 +488,7 @@
         <Width>200</Width>
         <Height>100</Height>
       </Size>
+      <ValueVisible>True</ValueVisible>
       <Visible>True</Visible>
     </MyFaceplate>
     <Panel>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Faceplate editorVersion="6.0.2.0">
+<Faceplate editorVersion="6.0.2.1">
   <Dependencies />
   <Document>
     <BackColor>White</BackColor>
@@ -77,11 +77,35 @@
         </DefaultBinding>
       </Item>
       <Item>
+        <Name>borderWidth</Name>
+        <Path>mimic.border.width</Path>
+        <DefaultValue />
+        <DefaultBinding>
+          <PropertyName />
+          <DataSource />
+          <DataMember>Value</DataMember>
+          <Expression />
+          <Format />
+        </DefaultBinding>
+      </Item>
+      <Item>
         <Name>myBackColor</Name>
         <Path>mimic.backColor</Path>
         <DefaultValue />
         <DefaultBinding>
           <PropertyName>myBackColor</PropertyName>
+          <DataSource />
+          <DataMember>Value</DataMember>
+          <Expression />
+          <Format />
+        </DefaultBinding>
+      </Item>
+      <Item>
+        <Name>valueVisible</Name>
+        <Path>txtValue.visible</Path>
+        <DefaultValue />
+        <DefaultBinding>
+          <PropertyName>valueVisible</PropertyName>
           <DataSource />
           <DataMember>Value</DataMember>
           <Expression />
