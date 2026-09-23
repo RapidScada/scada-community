@@ -1,0 +1,450 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mimic editorVersion="6.0.2.1">
+  <Dependencies>
+    <Faceplate typeName="ImageChanger1" path="Mimics\ImageChanger1.fp" />
+    <Faceplate typeName="ImageChanger2" path="Mimics\ImageChanger2.fp" />
+  </Dependencies>
+  <Document />
+  <Components>
+    <Text>
+      <ID>1</ID>
+      <AutoSize>True</AutoSize>
+      <BackColor />
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>0</Width>
+        <Color />
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <Conditions isArray="true" />
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DefaultText />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor />
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>30</X>
+        <Y>30</Y>
+      </Location>
+      <Name>txtImageName</Name>
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>0</OutCnlNum>
+      <Padding>
+        <Top>0</Top>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+        <Left>0</Left>
+      </Padding>
+      <PropertyBindings isArray="true">
+        <Item>
+          <PropertyName>text</PropertyName>
+          <DataSource>105</DataSource>
+          <DataMember>Data</DataMember>
+          <Expression>x.stat &gt; 0 ? "img" + x.val : "img"</Expression>
+          <Format>Image name: {0}</Format>
+        </Item>
+      </PropertyBindings>
+      <Script />
+      <Size>
+        <Width>100</Width>
+        <Height>100</Height>
+      </Size>
+      <Text>Image name</Text>
+      <TextAlign>TopLeft</TextAlign>
+      <TextDirection>Horizontal</TextDirection>
+      <Tooltip />
+      <Visible>True</Visible>
+      <WordWrap>False</WordWrap>
+    </Text>
+    <Text>
+      <ID>5</ID>
+      <AutoSize>True</AutoSize>
+      <BackColor />
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>0</Width>
+        <Color />
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <Conditions isArray="true" />
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DefaultText />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor />
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>180</X>
+        <Y>30</Y>
+      </Location>
+      <Name>txtImageIndex</Name>
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>0</OutCnlNum>
+      <Padding>
+        <Top>0</Top>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+        <Left>0</Left>
+      </Padding>
+      <PropertyBindings isArray="true">
+        <Item>
+          <PropertyName>text</PropertyName>
+          <DataSource>105</DataSource>
+          <DataMember>Data</DataMember>
+          <Expression>x.stat &gt; 0 ? x.val : 0</Expression>
+          <Format>Image index: {0}</Format>
+        </Item>
+      </PropertyBindings>
+      <Script />
+      <Size>
+        <Width>100</Width>
+        <Height>100</Height>
+      </Size>
+      <Text>Image index</Text>
+      <TextAlign>TopLeft</TextAlign>
+      <TextDirection>Horizontal</TextDirection>
+      <Tooltip />
+      <Visible>True</Visible>
+      <WordWrap>False</WordWrap>
+    </Text>
+    <ImageChanger1>
+      <ID>2</ID>
+      <Blinking>False</Blinking>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <DeviceNum>0</DeviceNum>
+      <Enabled>True</Enabled>
+      <ImageIndex>img</ImageIndex>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>30</X>
+        <Y>70</Y>
+      </Location>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>0</OutCnlNum>
+      <PropertyBindings isArray="true">
+        <Item>
+          <PropertyName>imageIndex</PropertyName>
+          <DataSource>105</DataSource>
+          <DataMember>Data</DataMember>
+          <Expression>x.stat &gt; 0 ? "img" + x.val : "img"</Expression>
+          <Format />
+        </Item>
+      </PropertyBindings>
+      <Size>
+        <Width>120</Width>
+        <Height>120</Height>
+      </Size>
+      <Visible>True</Visible>
+    </ImageChanger1>
+    <ImageChanger2>
+      <ID>3</ID>
+      <Blinking>False</Blinking>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>None</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <DeviceNum>0</DeviceNum>
+      <Enabled>True</Enabled>
+      <ImgNum>0</ImgNum>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>180</X>
+        <Y>70</Y>
+      </Location>
+      <Name />
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>0</OutCnlNum>
+      <PropertyBindings isArray="true">
+        <Item>
+          <PropertyName>imageIndex</PropertyName>
+          <DataSource>105</DataSource>
+          <DataMember>Data</DataMember>
+          <Expression>x.stat &gt; 0 ? x.val : 0</Expression>
+          <Format />
+        </Item>
+      </PropertyBindings>
+      <Size>
+        <Width>120</Width>
+        <Height>120</Height>
+      </Size>
+      <Visible>True</Visible>
+    </ImageChanger2>
+    <BasicButton>
+      <ID>4</ID>
+      <BackColor />
+      <Blinking>False</Blinking>
+      <BlinkingState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </BlinkingState>
+      <Border>
+        <Width>0</Width>
+        <Color />
+      </Border>
+      <CheckRights>False</CheckRights>
+      <ClickAction>
+        <ActionType>SendCommand</ActionType>
+        <ChartArgs />
+        <CommandArgs>
+          <ShowDialog>True</ShowDialog>
+          <CmdVal>0</CmdVal>
+        </CommandArgs>
+        <LinkArgs>
+          <Url />
+          <UrlParams>
+            <Enabled>False</Enabled>
+            <Param0 />
+            <Param1 />
+            <Param2 />
+            <Param3 />
+            <Param4 />
+            <Param5 />
+            <Param6 />
+            <Param7 />
+            <Param8 />
+            <Param9 />
+          </UrlParams>
+          <ViewID>0</ViewID>
+          <Target>Self</Target>
+          <ModalWidth>Normal</ModalWidth>
+          <ModalHeight>0</ModalHeight>
+        </LinkArgs>
+        <Script />
+      </ClickAction>
+      <CornerRadius>
+        <TopLeft>0</TopLeft>
+        <TopRight>0</TopRight>
+        <BottomRight>0</BottomRight>
+        <BottomLeft>0</BottomLeft>
+      </CornerRadius>
+      <CssClass />
+      <DeviceNum>0</DeviceNum>
+      <DisabledState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </DisabledState>
+      <Enabled>True</Enabled>
+      <Font>
+        <Inherit>True</Inherit>
+        <Name />
+        <Size>16</Size>
+        <Bold>False</Bold>
+        <Italic>False</Italic>
+        <Underline>False</Underline>
+      </Font>
+      <ForeColor />
+      <HoverState>
+        <BackColor />
+        <ForeColor />
+        <BorderColor />
+        <Underline>False</Underline>
+      </HoverState>
+      <ImageName />
+      <ImageSize>
+        <Width>16</Width>
+        <Height>16</Height>
+      </ImageSize>
+      <InCnlNum>0</InCnlNum>
+      <Location>
+        <X>30</X>
+        <Y>210</Y>
+      </Location>
+      <Name>btnSetImage</Name>
+      <ObjNum>0</ObjNum>
+      <OutCnlNum>105</OutCnlNum>
+      <PropertyBindings isArray="true" />
+      <Script />
+      <Size>
+        <Width>100</Width>
+        <Height>30</Height>
+      </Size>
+      <Text>Set Image</Text>
+      <Tooltip />
+      <Visible>True</Visible>
+    </BasicButton>
+  </Components>
+  <Images />
+</Mimic>
